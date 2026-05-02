@@ -36,7 +36,8 @@ This repo supports **two distinct Copilot features**. They work differently — 
 
 ```bash
 git clone https://github.com/zNatix/pr-reviewer-agent.git
-cp -r pr-reviewer-agent/.github /path/to/your-repo/
+cp -rn pr-reviewer-agent/.github/ /path/to/your-repo/.github/
+# -n = no-clobber: won't overwrite existing files
 git add .github && git commit -m "feat: add Copilot PR reviewer agent"
 git push
 ```

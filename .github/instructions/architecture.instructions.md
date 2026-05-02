@@ -42,3 +42,11 @@ excludeAgent: "coding-agent"
 - Methods: >50 lines → check if single responsibility holds; exception for exhaustive switch expressions with simple arms
 - Nesting: >3 levels of `if`/`foreach`/`switch` nesting → suggest extraction or pattern (strategy, chain of responsibility)
 - Switch statements: >7 branches → consider polymorphism or dictionary dispatch
+
+## Nullable Reference Types (.NET 6+)
+- Projects must enable `<Nullable>enable</Nullable>` in `.csproj`
+- `!` (null-forgiving operator) requires inline comment justifying why null is impossible at that point
+- Public API methods: never return `null` for collections — return `Enumerable.Empty<T>()` or `Array.Empty<T>()`
+- Flag `T?` on DTO properties without explicit `[Required]` attribute or documented default value
+- Flag `string?` returns from public methods without null check guidance in XML docs
+- Constructor-injected dependencies should be non-nullable (DI guarantees resolution)

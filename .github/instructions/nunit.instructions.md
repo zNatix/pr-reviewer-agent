@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.cs"
+applyTo: ["**/*Tests.cs", "**/*Test.cs", "**/Tests/**/*.cs", "**/Specs/**/*.cs"]
 excludeAgent: "coding-agent"
 ---
 
@@ -36,6 +36,18 @@ excludeAgent: "coding-agent"
 ## Timeouts & Cancellation
 - Use `[CancelAfter(milliseconds)]` on tests with risk of hanging (network calls, external APIs)
 - Long-running tests without timeout → flag
+
+## Advanced Patterns
+
+### Test Execution Order
+- `[Order(N)]` only when tests genuinely depend on prior state (rare). Document the dependency reason in a comment.
+- Flag `[Order]` without justification — test isolation should be the default.
+
+### Data-Driven Tests
+- Use `[TestCaseSource(typeof(MyTestData), nameof(MyTestData.Cases))]` for complex or dynamic test data
+- `[TestCase]` for simple inline data; `[TestCaseSource]` for external data sources or reusable datasets
+- Flag `[TestCaseSource]` that references an undefined member or non-`static` source
+- Never use `[TestCase]` with 10+ values (unreadable) — switch to `[TestCaseSource]`
 
 ## What to Flag
 - Tests with no assertions

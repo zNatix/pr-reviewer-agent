@@ -23,6 +23,18 @@ excludeAgent: "coding-agent"
 - Batch size: configure `MaxBatchSize` for insert/update operations
 - For very large bulk operations, consider `SqlBulkCopy` or raw SQL instead of EF Core
 
+## Transactions
+- Use `IDbContextTransaction` when multiple `SaveChangesAsync` calls form a single logical operation
+- Always wrap multi-step saves in `await using var transaction = await context.Database.BeginTransactionAsync()`
+- Flag multiple `SaveChangesAsync()` calls without an explicit transaction when they update related entities
+- Use `context.Database.CreateExecutionStrategy()` for retry logic with transient failures
+
+## Concurrency
+- Use `[Timestamp]` or `IsRowVersion()` for optimistic concurrency on entities that can be modified concurrently
+- Flag entities without concurrency tokens when the application has concurrent write scenarios
+- Always catch `DbUpdateConcurrencyException` and handle appropriately (reload + retry, or notify user)
+- Never silently discard concurrency exceptions
+
 ## Migrations
 - Migrations must be reversible (`Down` method) or documented why not
 - Never `Database.EnsureCreated()` in production — use migrations

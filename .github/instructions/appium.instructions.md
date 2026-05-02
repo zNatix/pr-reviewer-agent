@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.cs"
+applyTo: ["**/*Appium*.cs", "**/*AppiumTest*.cs", "**/*MobileTest*.cs", "**/Mobile*/**/*.cs", "**/Appium*/**/*.cs"]
 excludeAgent: "coding-agent"
 ---
 
