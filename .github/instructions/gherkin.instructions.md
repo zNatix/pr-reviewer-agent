@@ -1,6 +1,6 @@
 ---
 applyTo: "**/*.feature"
-excludeAgent: "cloud-agent"
+excludeAgent: "coding-agent"
 ---
 
 # Gherkin / Reqnroll Standards

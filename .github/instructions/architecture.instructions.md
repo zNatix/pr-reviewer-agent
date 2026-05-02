@@ -1,6 +1,6 @@
 ---
 applyTo: "**/*.cs"
-excludeAgent: "cloud-agent"
+excludeAgent: "coding-agent"
 ---
 
 # Architecture & Code Quality Standards

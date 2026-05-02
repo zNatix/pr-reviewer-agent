@@ -1,6 +1,6 @@
 ---
 applyTo: "**/*.cs"
-excludeAgent: "cloud-agent"
+excludeAgent: "coding-agent"
 ---
 
 # Performance Standards — C# / .NET
