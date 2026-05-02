@@ -1,5 +1,8 @@
 # Repository Standards — C# / Reqnroll / NUnit
 
+> These are universal standards that apply to ALL Copilot interactions in this repo (Chat, Code Review, Coding Agent).
+> For domain-specific review rules, see `.github/instructions/`.
+
 ## Code Style
 - Follow Microsoft's C# Coding Conventions: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
 - PascalCase for classes, methods, properties, public members
@@ -8,7 +11,6 @@
 - I prefix for interfaces (IUserService, IRepository)
 - Async methods end with Async suffix (GetUserAsync)
 - Use file-scoped namespaces
-- Use primary constructors where appropriate (C# 12+)
 - Prefer expression-bodied members for single-line methods and properties
 
 ## Architecture
@@ -29,3 +31,17 @@
 - Missing Reqnroll step definitions for new Gherkin scenarios
 - Public methods without XML doc comments
 - Tests that assert nothing meaningful (assert true, assert not null only)
+
+## Instruction Files
+
+For detailed, domain-specific rules used during code review, see:
+
+| Domain | File |
+|--------|------|
+| Security (OWASP, auth, secrets, input validation) | `.github/instructions/security.instructions.md` |
+| Architecture & SOLID | `.github/instructions/architecture.instructions.md` |
+| Performance, async, EF Core | `.github/instructions/performance.instructions.md` |
+| Gherkin feature files | `.github/instructions/gherkin.instructions.md` |
+| Reqnroll step definitions & hooks | `.github/instructions/reqnroll.instructions.md` |
+| NUnit test standards | `.github/instructions/nunit.instructions.md` |
+| Review output format | `.github/instructions/review-output.instructions.md` |

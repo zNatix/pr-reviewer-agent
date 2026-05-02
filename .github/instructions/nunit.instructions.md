@@ -33,4 +33,3 @@ excludeAgent: "coding-agent"
 - Tests with external dependencies not mocked (unit tests)
 - Missing tests for new public methods
 - Missing [TestCase] coverage for edge cases (null, empty, boundary)
-- Step definition methods over 30 lines (too much logic in step)
