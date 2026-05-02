@@ -38,6 +38,7 @@ excludeAgent: "coding-agent"
 - Business logic in controllers or step definitions
 - `static` classes holding mutable state
 - Service locator pattern (`IServiceProvider` injected into services)
-- Classes with >500 lines
-- Methods with >50 lines
-- Cyclomatic complexity — deeply nested if/switch should be refactored with patterns
+- Classes: >500 lines AND >7 public methods AND >3 dependencies → suggest splitting
+- Methods: >50 lines → check if single responsibility holds; exception for exhaustive switch expressions with simple arms
+- Nesting: >3 levels of `if`/`foreach`/`switch` nesting → suggest extraction or pattern (strategy, chain of responsibility)
+- Switch statements: >7 branches → consider polymorphism or dictionary dispatch

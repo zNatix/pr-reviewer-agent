@@ -16,7 +16,7 @@ excludeAgent: "coding-agent"
 ### Async/Await
 - Never `.Result`, `.Wait()`, `.GetAwaiter().GetResult()` on Tasks
 - `async void` only in event handlers — everywhere else `async Task`
-- Use `ConfigureAwait(false)` in library code
+- `ConfigureAwait(false)` in library code (nuget packages). Not needed in ASP.NET Core controllers or applications where `SynchronizationContext` is null (.NET Core+)
 - Avoid `Task.Run()` on ASP.NET Core — it steals threads from the pool
 
 ### Memory & Allocations
@@ -27,7 +27,8 @@ excludeAgent: "coding-agent"
 - Boxing: avoid casting value types to `object` in hot paths
 
 ### HTTP
-- `IHttpClientFactory` for all HttpClient instances — never `new HttpClient()`
+- `IHttpClientFactory` for all HttpClient instances in services — never `new HttpClient()`
+- Note: `new HttpClient()` is acceptable in short-lived console apps, tests, or one-off scripts
 - Use typed clients or named clients, not string-based factory in hot paths
 
 ## 🟡 Warning
@@ -48,3 +49,21 @@ excludeAgent: "coding-agent"
 - Use structured logging: `_logger.LogInformation("Processing {OrderId}", id)`
 - Never string interpolation in log messages
 - Guard expensive log parameter evaluation with `_logger.IsEnabled(LogLevel.Debug)`
+
+### Concurrency & Resource Disposal
+- Types implementing both `IDisposable` and `IAsyncDisposable` must be disposed with `await using` when used in async code
+- Flag `using` (sync) on types that implement `IAsyncDisposable` in async methods
+- Use `ConcurrentDictionary<TKey,TValue>` instead of `Dictionary` + manual locking
+- Flag sync-over-async on hot paths — this causes thread pool starvation under load
+- Use `Task.WhenAll` for independent parallel async operations, not sequential awaits
+- `Parallel.ForEach` with async bodies → flag; use `Task.WhenAll` or `Parallel.ForEachAsync` (.NET 6+)
+
+### Resilience
+- `HttpClient` calls in production code without retry/fallback policy → flag (use Polly or `Microsoft.Extensions.Resilience`)
+- Retry logic without exponential backoff and jitter
+- No timeout on `HttpClient` requests (default 100s is too high for most service-to-service calls)
+- Missing circuit breaker pattern on critical external dependencies
+
+### Rate Limiting
+- ASP.NET Core endpoints exposed publicly without `[EnableRateLimiting]` or rate limiting middleware → flag
+- Missing rate limiting on authentication endpoints (login, token refresh) — brute force vector
