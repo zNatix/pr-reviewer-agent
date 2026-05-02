@@ -52,6 +52,15 @@ options.DeviceName = Environment.GetEnvironmentVariable("APPIUM_DEVICE") ?? "And
 - Remote URLs require pre-uploaded app ID (BrowserStack, Sauce Labs, LambdaTest)
 - Never commit `.apk` / `.ipa` files to the repo — use CI artifacts or cloud device farms
 
+### Cloud Device Farms (BrowserStack, Sauce Labs, LambdaTest)
+- Cloud capabilities use vendor-specific namespaces:
+  - BrowserStack: `bstack:options` with `userName`, `accessKey`, `appiumVersion`
+  - Sauce Labs: `sauce:options` with `username`, `accessKey`
+  - LambdaTest: `lt:options` with `user`, `accessKey`, `w3c: true`
+- Flag capabilities without vendor namespace when targeting cloud farms (W3C may reject them silently)
+- Never hardcode cloud credentials — use environment variables
+- Cloud farm URLs: `https://hub.browserstack.com/wd/hub`, `https://ondemand.saucelabs.com/wd/hub`, `https://hub.lambdatest.com/wd/hub`
+
 ### Additional Appium options
 - `noReset: true` — don't reset app state between sessions (use cautiously — breaks test isolation)
 - `fullReset: true` — uninstall app after session (CI preference)

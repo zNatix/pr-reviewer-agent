@@ -205,4 +205,4 @@ MIT — use it, fork it, adapt it to your team. No attribution required (but app
 
 ---
 
-*Built with feedback from two independent architecture audits (v1: 6.5/10, v2: 8.5/10) and verified against official GitHub Copilot documentation (custom agents, supported models, instructions format). Model `gpt-5.2-codex` confirmed in [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and [OpenAI Codex agent docs](https://docs.github.com/en/copilot/concepts/agents/openai-codex).*
+*Built with feedback from two independent architecture audits (v1: 6.5/10, v2: 8.5/10, v3: 9.0/10) and verified against official GitHub Copilot documentation. Model `gpt-5.2-codex` appears in official [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) table (May 2026, GA, Agent mode) and [OpenAI Codex agent docs](https://docs.github.com/en/copilot/concepts/agents/openai-codex) as selectable model. `excludeAgent` field documented in [changelog (Nov 12, 2025)](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/).*

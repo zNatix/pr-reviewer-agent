@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.cs"
+applyTo: ["**/*.cs", "!**/Program.cs", "!**/Startup.cs", "!**/*.g.cs", "!**/*.Designer.cs"]
 excludeAgent: "coding-agent"
 ---
 

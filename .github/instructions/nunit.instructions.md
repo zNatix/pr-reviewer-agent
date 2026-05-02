@@ -1,5 +1,5 @@
 ---
-applyTo: ["**/*Tests.cs", "**/*Test.cs", "**/Tests/**/*.cs", "**/Specs/**/*.cs"]
+applyTo: ["**/*Tests.cs", "**/*Test.cs", "**/Tests/**/*.cs"]
 excludeAgent: "coding-agent"
 ---
 
@@ -48,6 +48,11 @@ excludeAgent: "coding-agent"
 - `[TestCase]` for simple inline data; `[TestCaseSource]` for external data sources or reusable datasets
 - Flag `[TestCaseSource]` that references an undefined member or non-`static` source
 - Never use `[TestCase]` with 10+ values (unreadable) — switch to `[TestCaseSource]`
+
+### Explicit Tests
+- `[Explicit]` marks tests that only run when explicitly selected (e.g., destructive tests, prod-like environment tests)
+- Flag `[Explicit]` without documented justification — silent skip from CI can hide regressions
+- Valid reasons: manual-only run, requires special hardware, writes to production database
 
 ## What to Flag
 - Tests with no assertions
