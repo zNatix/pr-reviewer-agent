@@ -16,6 +16,22 @@ The agent catches what humans miss — unhandled edge cases, security vulnerabil
 
 ---
 
+## Two Modes of Operation
+
+This repo supports **two distinct Copilot features**. They work differently — understand which you're using:
+
+| | **Automatic Code Review** | **@pr-reviewer Custom Agent** |
+|---|---|---|
+| **How it runs** | Automatically when you open a PR | Manually invoked via `@pr-reviewer` in Copilot Chat |
+| **What it reads** | `copilot-instructions.md` + `instructions/*.md` | `agents/pr-reviewer.agent.md` + `instructions/*.md` |
+| **Depth** | Fast, inline comments | Deep 8-step review with diff analysis, BDD traceability, context search |
+| **Output** | Inline PR comments | Structured summary + findings per file |
+| **Best for** | Every PR, quick feedback | Complex PRs, security reviews, architecture changes |
+
+> ⚠️ **Important**: The 8-step review process, BDD traceability, and specialized tooling (`search`/`execute`) only work in **@pr-reviewer Chat mode**. Automatic Code Review provides a lighter pass using the same instruction files but without the agent persona.
+
+---
+
 ## Quick Start
 
 ```bash
@@ -25,7 +41,9 @@ git add .github && git commit -m "feat: add Copilot PR reviewer agent"
 git push
 ```
 
-Done. Invoke it anywhere as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **VS Code**, or **Visual Studio**.
+Done. Invoke it as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **VS Code**, or **Visual Studio**.
+
+For automatic reviews on every PR, enable **Copilot Code Review** in your repository settings.
 
 ---
 
@@ -33,19 +51,19 @@ Done. Invoke it anywhere as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **
 
 | Priority | Category | Examples |
 |---|---|---|
-| 🔴 **Critical** | Security | SQL injection, hardcoded secrets, auth bypass, missing step definitions |
-| 🟡 **Warning** | Reliability | Missing error handling, missing tests, N+1 queries, `.Result` calls |
+| 🔴 **Critical** | Security | SQL injection, hardcoded secrets, auth bypass, insecure deserialization, SSRF, path traversal |
+| 🟡 **Warning** | Reliability | Missing error handling, missing tests, N+1 queries, `.Result` calls, resilience gaps |
 | 🔵 **Suggestion** | Quality | Naming conventions, code duplication, LINQ simplifications, XML docs |
 
 ### Review Process (8 steps)
-1. Understand intent (PR description + linked work items + Gherkin features)
-2. Diff analysis (file by file, cascading impact)
-3. Context check (search codebase for affected callers, DI registrations, configs)
-4. **BDD traceability** (Gherkin ↔ step definitions)
-5. Test quality (happy path + edge cases + failure modes)
-6. Security scan (OWASP Top 10)
-7. Performance (allocations, async misuse, EF Core patterns)
-8. Standards enforcement (SOLID, DRY, Microsoft conventions)
+1. **Understand intent** (PR description + linked work items + Gherkin features)
+2. **Diff analysis** (file by file, cascading impact)
+3. **Context check** (search codebase for affected callers, DI registrations, configs)
+4. **BDD traceability** (best-effort — Gherkin ↔ step definitions via grep + dotnet test listing)
+5. **Test quality** (happy path + edge cases + failure modes)
+6. **Security scan** (OWASP Top 10 + deserialization, SSRF, ReDoS, open redirect, mass assignment)
+7. **Performance** (allocations, async misuse, EF Core anti-patterns, resilience, rate limiting)
+8. **Standards enforcement** (SOLID, DRY, DI, logging, Microsoft conventions)
 
 ---
 
@@ -53,101 +71,94 @@ Done. Invoke it anywhere as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **
 
 ```
 .github/
-├── copilot-instructions.md                # Repo-wide standards
+├── copilot-instructions.md                # Repo-wide standards (all Copilot interactions)
 ├── agents/
-│   └── pr-reviewer.agent.md               # ✨ The reviewer agent
+│   └── pr-reviewer.agent.md               # ✨ The reviewer agent (persona + process)
 └── instructions/
-    ├── security.instructions.md           # OWASP, auth, secrets
-    ├── gherkin.instructions.md            # Feature files, Given-When-Then
-    ├── nunit.instructions.md              # Test naming, assertions, categories
-    ├── performance.instructions.md        # EF Core, async, memory, LINQ, HTTP
-    └── architecture.instructions.md       # SOLID, DRY, DI, project structure
+    ├── review-output.instructions.md      # Output format, severity tiers, summary template
+    ├── security.instructions.md           # OWASP, auth, secrets, deserialization, SSRF, ReDoS
+    ├── architecture.instructions.md       # SOLID, DRY, DI, project structure, code quality
+    ├── performance.instructions.md        # EF Core, async, memory, HTTP, resilience, rate limiting
+    ├── gherkin.instructions.md            # Feature file syntax, Given-When-Then, tags
+    ├── reqnroll.instructions.md           # Step definitions, hooks, Reqnroll-specific DI
+    ├── nunit.instructions.md              # Test naming, assertions, parallel execution, timeouts
+    ├── logging.instructions.md            # ILogger<T>, structured logging, no PII, source gen
+    ├── di.instructions.md                 # Constructor injection, lifetimes, captive deps, keyed services
+    └── efcore.instructions.md             # Querying, tracking, batching, migrations, compiled queries
 ```
 
 ### How the files work together
 
 | File | Scope | Read by |
 |---|---|---|
-| `copilot-instructions.md` | All PRs, all agents | Code Review + Coding Agent |
-| `security.instructions.md` | All `.cs` files | **Code Review only** (`excludeAgent: cloud-agent`) |
-| `gherkin.instructions.md` | All `.feature` files | **Code Review only** |
-| `nunit.instructions.md` | All `.cs` files | **Code Review only** |
-| `performance.instructions.md` | All `.cs` files | **Code Review only** |
-| `architecture.instructions.md` | All `.cs` files | **Code Review only** |
-| `pr-reviewer.agent.md` | When `@pr-reviewer` is invoked | Available as custom agent persona |
+| `copilot-instructions.md` | All PRs, all agents | Code Review + Coding Agent + Chat |
+| `*.instructions.md` | Per file type (via `applyTo`) | Code Review + Coding Agent (unless `excludeAgent` excludes) |
+| `pr-reviewer.agent.md` | When `@pr-reviewer` is invoked | Custom agent persona only |
 
 ---
 
-## Key design decisions
+## Adapt to Your Stack
 
-### Why `excludeAgent: cloud-agent` everywhere?
-Instruction files are for **code review only**. The coding agent shouldn't follow the same strict rules when generating code — it would become too constrained. If you want coding style rules for code generation, create separate instruction files without `excludeAgent`.
+### Minimal customization checklist (<1 hour)
 
-### Why Gherkin traceability is a 🔴 Critical?
-Reqnroll scenarios without matching step definitions are dead code. Step definitions without matching scenarios are untested code. The reviewer enforces bidirectional traceability on every PR that touches `.feature` or step definition files.
+1. **Edit `pr-reviewer.agent.md`**: update the model if needed (see [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models))
+2. **Adjust `copilot-instructions.md`**: replace `Company.Project.Layer` naming with your conventions
+3. **Review `security.instructions.md`**: add your specific compliance requirements
+4. **Test**: open a test PR and invoke `@pr-reviewer` in Copilot Chat
 
-### Why `gpt-5.2-codex`?
-It balances review quality with cost (as of April 2026). For teams wanting deeper security analysis, switch the `model:` field to `claude-sonnet-4.6` in `pr-reviewer.agent.md`. For lighter/faster reviews, switch to `gpt-5-mini`.
+### Stack variations
+
+| Your framework | Change |
+|---|---|
+| **xUnit instead of NUnit** | Replace `nunit.instructions.md` with xUnit equivalent (naming, assertions, traits) |
+| **MSTest** | Replace `nunit.instructions.md`; update test categories |
+| **SpecFlow (not Reqnroll)** | Rename `reqnroll.instructions.md`; update namespaces to `TechTalk.SpecFlow` |
+| **Dapper (not EF Core)** | Keep `efcore.instructions.md` for reference but add `dapper.instructions.md` |
+| **Minimal APIs** | Add `api-design.instructions.md` with endpoint conventions |
+| **No BDD** | Remove `gherkin.instructions.md` and `reqnroll.instructions.md` |
 
 ---
 
-## Customization
+## Token Budget
 
-### Adapt to your team
+The agent enforces a **25-file cap per review** to control AI credit consumption:
+- Skips auto-generated files (`*.Designer.cs`, `*.g.cs`, `*.generated.cs`, EF migrations)
+- Reviews in priority order on large PRs; un-reviewed files are listed explicitly
+- Dependabot PRs get security-only review (skips BDD traceability + test quality)
+- Findings capped at 30 items for readability
 
-Edit `pr-reviewer.agent.md` and update the **Project-Specific Rules** section:
-
-```markdown
-## Project-Specific Rules
-- Tech Stack: [your stack]
-- Test framework: [xUnit / NUnit / MSTest]
-- CI/CD: [GitHub Actions / Azure DevOps / Jenkins]
-- Never approve PRs that: [your team's red lines]
-```
-
-### Add your own rules
-
-Create new `*.instructions.md` files in `.github/instructions/`:
-
-```markdown
----
-applyTo: "src/api/**/*.cs"
-excludeAgent: "cloud-agent"
 ---
 
-# API Conventions
-- All controllers return `ActionResult<T>` not `IActionResult`
-- Use `[ApiController]` attribute on all controllers
-- Validate request DTOs with `[Required]` / `[Range]` attributes
-```
+## Roadmap
 
-### Choose a different model
+### v1.1 (next)
+- [ ] GitHub Actions workflow for automated PR review on every PR
+- [ ] Auto-labeling suggestions (`size/L`, `breaking-change`, `needs-migration`)
+- [ ] `api-design.instructions.md` (versioning, ProblemDetails, pagination, ETag)
 
-Edit the `model:` field in `pr-reviewer.agent.md` YAML frontmatter. See [GitHub's model pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing).
+### v1.2
+- [ ] xUnit and MSTest instruction files
+- [ ] Monorepo support (multi-language gating based on diff contents)
+- [ ] Feedback loop: issue template for reporting false positives
+
+### v2.0
+- [ ] Integration with GitHub Checks API for inline annotations
+- [ ] Sub-agents for specialized reviews (security-only, perf-only)
+- [ ] Integration with Azure DevOps work items
 
 ---
 
 ## Requirements
 
 - **GitHub Copilot Business** or **Enterprise** plan
-- Copilot Code Review enabled in organisation policies
-- (Optional) GitHub Actions for full project context analysis
-- Repository language: **C# / .NET** with **Reqnroll + NUnit**
-
----
-
-## Roadmap
-
-- [ ] Sub-agents for specialized reviews (security-only, perf-only)
-- [ ] Integration with Azure DevOps work items
-- [ ] Support for xUnit and MSTest instruction files
-- [ ] GitHub Actions workflow for automated PR reviewer on every PR
+- Copilot Code Review enabled in organization policies (for automatic mode)
+- Repository language: **C# / .NET** with **Reqnroll + NUnit** (adaptable to other stacks)
 
 ---
 
 ## Contributing
 
-This is a template — fork it, adapt it to your stack, and share improvements via PR. If your team uses a different BDD framework (SpecFlow, Cucumber) or test framework (xUnit, MSTest), contributions are welcome.
+This is a template — fork it, adapt it to your stack, and share improvements via PR. Contributions for additional test frameworks (xUnit, MSTest), BDD tools (SpecFlow, Cucumber), or language stacks are welcome.
 
 ---
 
@@ -157,4 +168,4 @@ MIT — use it, fork it, adapt it to your team. No attribution required (but app
 
 ---
 
-*Built with feedback from 10 official GitHub documentation sources and 2,500+ analyzed agent files.*
+*Built with feedback from an independent architecture audit and verified against official GitHub Copilot documentation (custom agents, supported models, instructions format).*

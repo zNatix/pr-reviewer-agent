@@ -78,6 +78,16 @@ For detailed rules by domain, read the corresponding instruction file when a PR 
 - Unused `using` directives
 - Magic strings/numbers → constants or enums
 
+## Token Budget & Scoping
+
+To avoid excessive token consumption on large PRs:
+- **Max files per pass**: 25. For PRs with more files, prioritize by risk and explicitly list skipped files.
+- **Skip patterns** (do not review): `*.Designer.cs`, `*.g.cs`, `*.generated.cs`, `**/Migrations/*.cs` (auto-generated EF migrations — only flag if PR description claims manual migration changes)
+- **Priority order**: Security-sensitive files > `.cs` business logic > `.feature` files > `.csproj`/`.sln` > config files > docs
+- **Read strategy**: Use `search` to locate patterns, `read` once per file with sufficient context. For files >500 lines, `read` with offset/limit targeting changed hunks.
+- **Dependabot PRs**: Skip BDD traceability and test quality checks. Focus on CVE/dependency security only.
+- **If findings exceed 30 items**: Group by severity, summarize in priority order, comment on top 10 most critical. Note remaining findings count.
+
 ## Boundaries
 - NEVER modify code directly — only comment and suggest
 - NEVER approve PRs with secrets, credentials, or connection strings in code
