@@ -1,10 +1,11 @@
 # 🔍 PR Reviewer Agent for GitHub Copilot
 
-> A specialized GitHub Copilot custom agent that reviews pull requests with expert-level scrutiny — built for **C# / .NET / Reqnroll / Gherkin / NUnit** projects.
+> A specialized GitHub Copilot custom agent that reviews pull requests with expert-level scrutiny — built for **C# / .NET / Reqnroll / Gherkin / NUnit / Playwright / Appium** projects.
 
 ![GitHub Copilot](https://img.shields.io/badge/GitHub%20Copilot-Agent-8A2BE2?logo=github)
 ![Platform](https://img.shields.io/badge/Platform-GitHub.com%20%7C%20VS%20Code%20%7C%20Visual%20Studio-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![Audited](https://img.shields.io/badge/Audited-2x_✅-success)
 
 ---
 
@@ -13,6 +14,17 @@
 A production-ready **custom agent** for GitHub Copilot that acts as your automated first-pass code reviewer. Drop it into any C# repository on **Copilot Business or Enterprise** and Copilot will gain a senior reviewer persona with 15 years of .NET experience.
 
 The agent catches what humans miss — unhandled edge cases, security vulnerabilities, EF Core anti-patterns, missing BDD step definitions — while respecting your team's standards.
+
+### Key Features
+
+| Feature | Description |
+|---|---|
+| **12 domain-specific rule files** | Security (OWASP + deserialization/SSRF/ReDoS), architecture (SOLID/nullability), performance (EF Core/async/resilience), logging, DI, NUnit, Gherkin, Reqnroll, Playwright, Appium |
+| **Token budget controls** | 25-file cap, skip auto-generated code, Dependabot fast-path, 30-finding max |
+| **Prompt injection defense** | Rejects malicious instructions embedded in code comments, READMEs, or PR descriptions |
+| **Dual-mode support** | Works as both automatic Code Review (lightweight, every PR) and `@pr-reviewer` Chat agent (deep 8-step review) |
+| **BDD traceability** | Best-effort Gherkin ↔ step definition matching with honest capabilities disclaimer |
+| **Stack-adaptable** | Drop-in compatible with xUnit, MSTest, SpecFlow, Dapper, Selenium — see adaptation guide below |
 
 ---
 
@@ -145,19 +157,30 @@ The agent enforces a **25-file cap per review** to control AI credit consumption
 
 ## Roadmap
 
-### v1.1 (next)
+### v1.0 ✅ (current)
+- [x] 12 domain-specific instruction files (security, architecture, performance, logging, DI, EF Core, NUnit, Gherkin, Reqnroll, Playwright, Appium, review-output)
+- [x] Token budget with scoping, Dependabot fast-path, skip patterns
+- [x] Dual-mode documentation (Automatic Code Review vs `@pr-reviewer` Chat)
+- [x] Prompt injection defense
+- [x] 2x independent architecture audits (6.5/10 → 8.5/10)
+- [x] Stack adaptation guide (xUnit, MSTest, SpecFlow, Dapper, Selenium, Minimal APIs)
+
+### v1.0.1 (next patch)
+- [ ] `api-design.instructions.md` (versioning, ProblemDetails, pagination, ETag)
+- [ ] Supply chain security rules (lockfile verification, typosquatting, signed packages)
+- [ ] Token budget refinement: byte-cap for PRs >100 changed files
+
+### v1.1
 - [ ] GitHub Actions workflow for automated PR review on every PR
 - [ ] Auto-labeling suggestions (`size/L`, `breaking-change`, `needs-migration`)
-- [ ] `api-design.instructions.md` (versioning, ProblemDetails, pagination, ETag)
-
-### v1.2
 - [ ] xUnit and MSTest instruction files
-- [ ] Monorepo support (multi-language gating based on diff contents)
-- [ ] Feedback loop: issue template for reporting false positives
+- [ ] `examples/` folder with bad-PR/good-PR for customization onboarding
 
 ### v2.0
 - [ ] Integration with GitHub Checks API for inline annotations
 - [ ] Sub-agents for specialized reviews (security-only, perf-only)
+- [ ] Monorepo support (multi-language gating based on diff contents)
+- [ ] Feedback loop: issue template for reporting false positives
 - [ ] Integration with Azure DevOps work items
 
 ---
@@ -166,7 +189,7 @@ The agent enforces a **25-file cap per review** to control AI credit consumption
 
 - **GitHub Copilot Business** or **Enterprise** plan
 - Copilot Code Review enabled in organization policies (for automatic mode)
-- Repository language: **C# / .NET** with **Reqnroll + NUnit** (adaptable to other stacks)
+- Repository language: **C# / .NET** — covers Reqnroll, NUnit, Playwright, Appium, EF Core, ASP.NET Core (adaptable to other stacks)
 
 ---
 
@@ -182,4 +205,4 @@ MIT — use it, fork it, adapt it to your team. No attribution required (but app
 
 ---
 
-*Built with feedback from an independent architecture audit and verified against official GitHub Copilot documentation (custom agents, supported models, instructions format).*
+*Built with feedback from two independent architecture audits (v1: 6.5/10, v2: 8.5/10) and verified against official GitHub Copilot documentation (custom agents, supported models, instructions format). Model `gpt-5.2-codex` confirmed in [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and [OpenAI Codex agent docs](https://docs.github.com/en/copilot/concepts/agents/openai-codex).*
