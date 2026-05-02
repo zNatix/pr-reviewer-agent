@@ -58,6 +58,9 @@ Done. Invoke it as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **VS Code**
 
 For automatic reviews on every PR, enable **Copilot Code Review** in your repository settings.
 
+### See it in action
+Check `examples/sample-pr-diff.patch` (a PR with 16 deliberately injected bugs across security, Playwright, and Appium) and `examples/sample-review-output.md` (the agent's review catching all 16).
+
 ---
 
 ## What it reviews
@@ -152,6 +155,22 @@ The agent enforces a **25-file cap per review** to control AI credit consumption
 - Reviews in priority order on large PRs; un-reviewed files are listed explicitly
 - Dependabot PRs get security-only review (skips BDD traceability + test quality)
 - Findings capped at 30 items for readability
+
+---
+
+## Known Limitations
+
+Be honest about what this agent can and can't do. These are not bugs — they're design trade-offs.
+
+| Limitation | Impact | Mitigation |
+|---|---|---|
+| **BDD traceability is grep-based, not AST-resolved** | May miss step definition matches when `[Scope]` attribute is used or Cucumber expressions are complex | Run `dotnet test --list-tests` as supplementary check (the agent will try this if Reqnroll project detected) |
+| **12 instruction files may exceed Copilot Code Review's 4KB-per-file context limit** | In automatic mode, rules from the largest files (appium 172 lines, playwright 135 lines) may be partially truncated | Keep instruction files focused; test on your largest file first |
+| **`excludeAgent: "coding-agent"` behavior not empirically smoke-tested** | Documented in [official changelog](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/) but not verified by us on a live Coding Agent. May silently fall back | Test in your repo: ask Coding Agent to generate code violating a rule and see if it's caught |
+| **Not tested on PRs >100 files** | Token budget caps at 25 files — the rest are listed as skipped. On massive PRs, important changes may be in the skipped portion | Split large PRs; the agent will list skipped files explicitly |
+| **Severity tiers are guidance, not enforcement** | LLM non-determinism: the agent may classify the same bug as 🟡 Warning on one run and 🔴 Critical on another | Use as first-pass triage, not final gate. Human reviewer always has final say |
+| **No CI status checking** | The agent cannot verify if CI is green — it will remind you to check manually | Enable branch protection rules with required checks in GitHub |
+| **No coverage of Selenium, Cypress, or other test frameworks** | Only Playwright and Appium have dedicated rule files. Other frameworks get only the universal C# rules | Add your own `selenium.instructions.md`, `cypress.instructions.md`, etc. following the same pattern |
 
 ---
 

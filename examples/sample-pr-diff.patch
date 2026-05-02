@@ -1,0 +1,139 @@
+diff --git a/AppiumTests.cs b/AppiumTests.cs
+new file mode 100644
+index 0000000..6e3bdc9
+--- /dev/null
++++ b/AppiumTests.cs
+@@ -0,0 +1,41 @@
++using OpenQA.Selenium;
++using OpenQA.Selenium.Appium;
++using OpenQA.Selenium.Appium.Android;
++using OpenQA.Selenium.Appium.Enums;
++using NUnit.Framework;
++
++namespace SmokeTest.Mobile;
++
++[TestFixture]
++public class SettingsTests
++{
++    private static AndroidDriver? _driver; // 🔴 BUG: static driver (not thread-safe)
++
++    [OneTimeSetUp]
++    public void Setup()
++    {
++        var options = new AppiumOptions();
++        // 🔴 BUG: hardcoded capabilities
++        options.PlatformName = "Android";
++        options.DeviceName = "Pixel 7";
++        options.PlatformVersion = "14.0";
++        options.AddAdditionalAppiumOption("appPackage", "com.android.settings");
++        options.AddAdditionalAppiumOption("appActivity", ".Settings");
++        // 🔴 BUG: hardcoded server URL
++        _driver = new AndroidDriver(new Uri("http://192.168.1.100:4723/"), options);
++    }
++
++    // 🔴 BUG: missing [TearDown] — no driver.Quit() or driver.Dispose()
++
++    [Test]
++    public void OpenSettings_CheckBatteryOption_Exists()
++    {
++        // 🔴 BUG: XPath on mobile without explicit wait
++        var batteryItem = _driver.FindElement(By.XPath("//*[@text='Battery']"));
++        batteryItem.Click();
++
++        // 🔴 BUG: Thread.Sleep as sync
++        Thread.Sleep(1000);
++        Assert.That(_driver.PageSource, Does.Contain("Battery usage"));
++    }
++}
+diff --git a/OrdersController.cs b/OrdersController.cs
+new file mode 100644
+index 0000000..4e2b91c
+--- /dev/null
++++ b/OrdersController.cs
+@@ -0,0 +1,54 @@
++using Microsoft.AspNetCore.Mvc;
++using Microsoft.EntityFrameworkCore;
++
++namespace SmokeTest.Api.Controllers;
++
++[ApiController]
++[Route("api/orders")]
++public class OrdersController : ControllerBase
++{
++    private readonly AppDbContext _db;
++
++    public OrdersController(AppDbContext db) => _db = db;
++
++    [HttpGet("search")]
++    public async Task<IActionResult> Search(string? keyword)
++    {
++        // 🔴 BUG: SQL injection — raw SQL string concatenation
++        var sql = $"SELECT * FROM Orders WHERE Description LIKE '%{keyword}%'";
++        var orders = await _db.Orders.FromSqlRaw(sql).ToListAsync();
++        return Ok(orders);
++    }
++
++    [HttpPost]
++    public async void CreateOrder(Order order) // 🔴 BUG: async void in controller
++    {
++        _db.Orders.Add(order);
++        await _db.SaveChangesAsync();
++    }
++
++    [HttpDelete("{id}")]
++    public async Task<IActionResult> Delete(int id)
++    {
++        var order = await _db.Orders.FindAsync(id);
++        _db.Orders.Remove(order);
++        await _db.SaveChangesAsync();
++        // 🔴 BUG: no confirmation, no error handling if order is null
++        return Ok();
++    }
++
++    public IActionResult GetConfig()
++    {
++        // 🔴 BUG: connection string hardcoded
++        var connString = "Server=prod-db.internal;User Id=admin;Password=SuperSecret123!";
++        return Ok(new { connection = connString });
++    }
++}
++
++public class Order { public int Id { get; set; } public string Description { get; set; } = ""; }
++
++public class AppDbContext : DbContext
++{
++    public DbSet<Order> Orders { get; set; } = null!;
++    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
++}
+diff --git a/PlaywrightTests.cs b/PlaywrightTests.cs
+new file mode 100644
+index 0000000..035b99b
+--- /dev/null
++++ b/PlaywrightTests.cs
+@@ -0,0 +1,26 @@
++using Microsoft.Playwright;
++using Microsoft.Playwright.NUnit;
++using NUnit.Framework;
++
++namespace SmokeTest.E2E;
++
++public class LoginTests : PageTest
++{
++    [Test]
++    public async Task Login_WithValidCredentials_RedirectsToDashboard()
++    {
++        // 🔴 BUG: XPath locator instead of role/text/label
++        var usernameField = Page.Locator("//div[@class='login-form']//input[1]");
++        await usernameField.FillAsync("admin");
++
++        // 🔴 BUG: Thread.Sleep instead of web-first assertion
++        await Page.Locator("//button[@type='submit']").ClickAsync();
++        Thread.Sleep(2000);
++
++        // 🔴 BUG: .Result on async operation
++        var title = Page.TitleAsync().Result;
++        Assert.That(title, Does.Contain("Dashboard"));
++
++        // 🔴 BUG: Missing assertion — navigation-only test
++    }
++}
