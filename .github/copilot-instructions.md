@@ -44,4 +44,9 @@ For detailed, domain-specific rules used during code review, see:
 | Gherkin feature files | `.github/instructions/gherkin.instructions.md` |
 | Reqnroll step definitions & hooks | `.github/instructions/reqnroll.instructions.md` |
 | NUnit test standards | `.github/instructions/nunit.instructions.md` |
+| Logging | `.github/instructions/logging.instructions.md` |
+| Dependency Injection | `.github/instructions/di.instructions.md` |
+| Entity Framework Core | `.github/instructions/efcore.instructions.md` |
 | Review output format | `.github/instructions/review-output.instructions.md` |
+| Playwright E2E tests | `.github/instructions/playwright.instructions.md` |
+| Appium mobile tests | `.github/instructions/appium.instructions.md` |

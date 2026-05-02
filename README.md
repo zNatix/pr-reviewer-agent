@@ -55,6 +55,15 @@ For automatic reviews on every PR, enable **Copilot Code Review** in your reposi
 | 🟡 **Warning** | Reliability | Missing error handling, missing tests, N+1 queries, `.Result` calls, resilience gaps |
 | 🔵 **Suggestion** | Quality | Naming conventions, code duplication, LINQ simplifications, XML docs |
 
+### Test Automation Support
+
+The agent also reviews Playwright and Appium test code:
+
+| Tool | What it checks |
+|---|---|
+| **Playwright** | Locator strategy (role > label > testid > CSS — never XPath), web-first assertions vs manual waits, base class lifecycle (`PageTest`/`ContextTest`), test isolation, API mocking, no `.Result` on async ops |
+| **Appium** | Driver lifecycle (`Quit`/`Dispose` in tear down), externalized capabilities, explicit waits vs `Thread.Sleep`, `AccessibilityId` priority over XPath, W3C Actions over deprecated `TouchAction`, parallel execution port config |
+
 ### Review Process (8 steps)
 1. **Understand intent** (PR description + linked work items + Gherkin features)
 2. **Diff analysis** (file by file, cascading impact)
@@ -84,7 +93,9 @@ For automatic reviews on every PR, enable **Copilot Code Review** in your reposi
     ├── nunit.instructions.md              # Test naming, assertions, parallel execution, timeouts
     ├── logging.instructions.md            # ILogger<T>, structured logging, no PII, source gen
     ├── di.instructions.md                 # Constructor injection, lifetimes, captive deps, keyed services
-    └── efcore.instructions.md             # Querying, tracking, batching, migrations, compiled queries
+    ├── efcore.instructions.md             # Querying, tracking, batching, migrations, compiled queries
+    ├── playwright.instructions.md         # Locators, assertions, base classes, lifecycle, anti-patterns
+    └── appium.instructions.md             # Drivers, capabilities, waits, gestures, mobile lifecycle
 ```
 
 ### How the files work together
@@ -116,6 +127,8 @@ For automatic reviews on every PR, enable **Copilot Code Review** in your reposi
 | **Dapper (not EF Core)** | Keep `efcore.instructions.md` for reference but add `dapper.instructions.md` |
 | **Minimal APIs** | Add `api-design.instructions.md` with endpoint conventions |
 | **No BDD** | Remove `gherkin.instructions.md` and `reqnroll.instructions.md` |
+| **Selenium (not Playwright)** | Replace `playwright.instructions.md`; add Selenium-specific rules |
+| **No mobile testing** | Remove `appium.instructions.md` |
 
 ---
 
