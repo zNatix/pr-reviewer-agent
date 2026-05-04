@@ -42,4 +42,9 @@ excludeAgent: ["coding-agent"]
 - Scenarios longer than 15 lines
 - Implementation details in Gherkin (CSS selectors, database queries, API paths)
 - Ambiguous step text that could match multiple step definitions without `[Scope]`
+- Common ambiguous regex patterns that cause step conflicts:
+  - `(.*)` greedy capture — matches too broadly; prefer `([^"]+)` or `(\d+)` for specific types
+  - `I have (\d+) items` vs `I have (\d+) items in my (.*)` — second is a superset, first is ambiguous without `[Scope]`
+  - Overlapping `Given` steps across multiple feature files with different behavior intent
+  - Wildcard-only steps like `Given I (.*)` — never use; tie to specific phrasing
 - Technical jargon in scenario names (e.g., "Test POST /api/orders returns 200")

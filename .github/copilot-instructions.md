@@ -34,6 +34,8 @@
 
 ## Instruction Files
 
+Domain-specific rule files in `.github/instructions/` apply during code review. Each file uses `excludeAgent: ["coding-agent"]` because these are review rules (flagging anti-patterns, enforcing conventions), not code-generation rules. Remove the `excludeAgent` field if you want the Coding Agent to also follow these rules when generating code.
+
 For detailed, domain-specific rules used during code review, see:
 
 | Domain | File |

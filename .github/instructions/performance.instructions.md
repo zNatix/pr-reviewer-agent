@@ -28,6 +28,9 @@ excludeAgent: ["coding-agent"]
 - Use `ArrayPool<T>` for large temporary arrays in hot paths
 - Use `Span<T>` / `Memory<T>` for performance-critical string/buffer operations
 - Boxing: avoid casting value types to `object` in hot paths
+- .NET 8+: Use `SearchValues<T>` for efficient character/byte search patterns — `SearchValues.Create("AEIOU")` is faster than `Contains` + `IndexOf` chains
+- .NET 8+: Use `FrozenDictionary<TKey,TValue>` and `FrozenSet<T>` for read-only collections created once and queried frequently — faster lookups than `Dictionary<TKey,TValue>` after initial freeze cost
+- .NET 9+: Use `OrderedDictionary<TKey,TValue>` when insertion order matters (replaces `Dictionary` + `List` workaround)
 
 ### HTTP
 - `IHttpClientFactory` for all HttpClient instances in services — never `new HttpClient()`
