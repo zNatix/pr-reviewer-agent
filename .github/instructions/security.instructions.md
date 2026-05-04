@@ -1,6 +1,7 @@
 ---
 applyTo: ["**/*.cs", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**"]
-excludeAgent: "coding-agent"
+version: "1.0.0"
+excludeAgent: ["coding-agent"]
 ---
 
 # Security Review Rules — C# / .NET

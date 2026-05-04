@@ -1,6 +1,7 @@
 ---
 applyTo: ["**/*Playwright*.cs", "**/*PlaywrightTest*.cs", "**/E2E/**/*.cs", "**/Playwright*/**/*.cs"]
-excludeAgent: "coding-agent"
+version: "1.0.0"
+excludeAgent: ["coding-agent"]
 ---
 
 # Playwright for .NET — Test Automation Standards

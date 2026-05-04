@@ -1,5 +1,6 @@
 ---
 name: pr-reviewer
+version: "1.0.0"
 description: Senior PR reviewer for C# / Reqnroll / Gherkin / NUnit projects. Reviews diffs for bugs, security, performance, architecture, BDD coverage, and team standards. Enforces reusable code practices and Microsoft official conventions.
 # Rationale: GPT-5.2-Codex balances code review depth with cost at PR-sized context.
 # Fallback: claude-sonnet-4-6 if GPT-5.2-Codex is unavailable or deprecated.

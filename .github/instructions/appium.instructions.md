@@ -1,6 +1,7 @@
 ---
 applyTo: ["**/*Appium*.cs", "**/*AppiumTest*.cs", "**/*MobileTest*.cs", "**/Mobile*/**/*.cs", "**/Appium*/**/*.cs"]
-excludeAgent: "coding-agent"
+version: "1.0.0"
+excludeAgent: ["coding-agent"]
 ---
 
 # Appium for .NET — Mobile Test Automation Standards

@@ -1,9 +1,10 @@
 ---
+version: "1.0.0"
 # Excludes Program.cs/Startup.cs because composition root conventions (host builder, middleware
 # pipeline, service registration) are project-specific — enforcing generic patterns there causes
 # false positives. Security, DI, and performance instruction files cover the composition root.
 applyTo: ["**/*.cs", "!**/Program.cs", "!**/Startup.cs", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**", "!**/*Test*.cs", "!**/*Tests.cs"]
-excludeAgent: "coding-agent"
+excludeAgent: ["coding-agent"]
 ---
 
 # Architecture & Code Quality Standards

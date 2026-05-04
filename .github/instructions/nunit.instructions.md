@@ -1,6 +1,7 @@
 ---
 applyTo: ["**/*Tests.cs", "**/*Test.cs", "**/Tests/**/*.cs"]
-excludeAgent: "coding-agent"
+version: "1.0.0"
+excludeAgent: ["coding-agent"]
 ---
 
 # NUnit Test Standards

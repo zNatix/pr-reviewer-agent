@@ -1,6 +1,7 @@
 ---
 applyTo: "**/*.feature"
-excludeAgent: "coding-agent"
+version: "1.0.0"
+excludeAgent: ["coding-agent"]
 ---
 
 # Gherkin Feature File Standards
