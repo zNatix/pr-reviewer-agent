@@ -66,7 +66,7 @@ For detailed rules by domain, read the corresponding instruction file when a PR 
 - Hardcoded credentials, tokens, or environment-specific values
 - `async void` outside of event handlers (crashes the process on exception)
 
-### 🟡 WARNING — Must Address
+### 🟡 WARNING — Should Fix Before Merge
 - Missing error handling or empty catch blocks
 - Missing NUnit tests for new behavior
 - Missing or incomplete Gherkin scenarios for new features

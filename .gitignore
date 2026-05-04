@@ -1,0 +1,72 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+[Dd]ebug/
+[Rr]elease/
+[Dd]ebugPublic/
+[Rr]eleasePublic/
+x64/
+x86/
+build/
+bld/
+*.nupkg
+*.snupkg
+TestResults/
+*.coverage
+*.coveragexml
+*.lcov
+*.trx
+
+# .NET packages
+packages/
+*.NuGet.props
+*.NuGet.targets
+
+# VS / Rider
+.vs/
+.idea/
+*.sln.iml
+_ReSharper.Caches/
+
+# VS Code
+.vscode/
+
+# Node (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+*.env
+appsettings.*.local.json
+appsettings.Development.json
+
+# Secrets
+*.pfx
+*.snk
+secrets.json
+
+# OpenWolf
+.wolf/
+
+# Playwright
+playwright/.cache/
+playwright-report/
+test-results/
+
+# Appium
+appium-logs/
+*.apk
+*.ipa
