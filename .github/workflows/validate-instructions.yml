@@ -5,6 +5,10 @@ on:
     paths:
       - '.github/instructions/*.instructions.md'
       - '.github/agents/*.agent.md'
+  push:
+    paths:
+      - '.github/instructions/*.instructions.md'
+      - '.github/agents/*.agent.md'
 
 jobs:
   validate:
@@ -12,71 +16,127 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate instruction file frontmatter
+      - name: Validate frontmatter with YAML parser
         run: |
-          errors=0
-          for f in .github/instructions/*.instructions.md; do
-            echo "Checking $f"
+          python3 -c "
+          import sys, re, os, glob
 
-            # Must have YAML frontmatter delimiters
-            if ! head -1 "$f" | grep -q '^---$'; then
-              echo "  ERROR: missing opening ---"
-              errors=$((errors+1))
-              continue
-            fi
+          errors = 0
+          semver_re = re.compile(r'^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$')
 
-            # Extract frontmatter (lines between first and second ---)
-            fm=$(sed -n '2,/^---$/p' "$f" | head -n -1)
+          def extract_frontmatter(path):
+              with open(path) as f:
+                  content = f.read()
+              if not content.startswith('---'):
+                  return None, 'missing opening ---'
+              end = content.find('---', 3)
+              if end == -1:
+                  return None, 'missing closing ---'
+              return content[3:end].strip(), None
 
-            # Required fields
-            if ! echo "$fm" | grep -q 'applyTo:'; then
-              echo "  ERROR: missing required field 'applyTo'"
-              errors=$((errors+1))
-            fi
+          # Validate instruction files
+          for f in sorted(glob.glob('.github/instructions/*.instructions.md')):
+              print(f'Checking {f}')
+              fm, err = extract_frontmatter(f)
+              if err:
+                  print(f'  ERROR: {err}')
+                  errors += 1
+                  continue
 
-            # Validate applyTo glob syntax (basic check)
-            applyto=$(echo "$fm" | grep 'applyTo:' | head -1)
-            # Check for unmatched brackets or quotes
-            if echo "$applyto" | grep -q '\[.*[^\]]$'; then
-              echo "  ERROR: applyTo array appears unclosed"
-              errors=$((errors+1))
-            fi
+              try:
+                  import yaml
+                  doc = yaml.safe_load(fm)
+              except yaml.YAMLError as e:
+                  print(f'  ERROR: YAML parse failed: {e}')
+                  errors += 1
+                  continue
 
-            echo "  OK"
-          done
+              if not isinstance(doc, dict):
+                  print(f'  ERROR: frontmatter must be a YAML mapping, got {type(doc).__name__}')
+                  errors += 1
+                  continue
 
-          if [ $errors -gt 0 ]; then
-            echo "::error::$errors instruction file(s) have invalid frontmatter"
-            exit 1
-          fi
-          echo "All instruction files validated."
+              # applyTo: required
+              if 'applyTo' not in doc:
+                  print('  ERROR: missing required field applyTo')
+                  errors += 1
+              elif doc['applyTo'] is None:
+                  print('  ERROR: applyTo is null')
+                  errors += 1
 
-      - name: Validate agent file frontmatter
-        run: |
-          errors=0
-          for f in .github/agents/*.agent.md; do
-            echo "Checking $f"
+              # excludeAgent: must be list
+              if 'excludeAgent' not in doc:
+                  print('  ERROR: missing excludeAgent field')
+                  errors += 1
+              elif not isinstance(doc['excludeAgent'], list):
+                  print(f'  ERROR: excludeAgent must be an array, got {type(doc[\"excludeAgent\"]).__name__}')
+                  errors += 1
 
-            if ! head -1 "$f" | grep -q '^---$'; then
-              echo "  ERROR: missing opening ---"
-              errors=$((errors+1))
-              continue
-            fi
+              # version: must be semver string
+              if 'version' not in doc:
+                  print('  ERROR: missing version field')
+                  errors += 1
+              elif not isinstance(doc['version'], str) or not semver_re.match(doc['version']):
+                  print(f'  ERROR: version must be semver (e.g. 1.0.0), got: {doc.get(\"version\")}')
+                  errors += 1
 
-            fm=$(sed -n '2,/^---$/p' "$f" | head -n -1)
+              print('  OK')
 
-            for field in name description model tools; do
-              if ! echo "$fm" | grep -q "^$field:"; then
-                echo "  ERROR: missing required field '$field'"
-                errors=$((errors+1))
-              fi
-            done
+          # Validate agent files
+          for f in sorted(glob.glob('.github/agents/*.agent.md')):
+              print(f'Checking {f}')
+              fm, err = extract_frontmatter(f)
+              if err:
+                  print(f'  ERROR: {err}')
+                  errors += 1
+                  continue
 
-            echo "  OK"
-          done
+              try:
+                  import yaml
+                  doc = yaml.safe_load(fm)
+              except yaml.YAMLError as e:
+                  print(f'  ERROR: YAML parse failed: {e}')
+                  errors += 1
+                  continue
 
-          if [ $errors -gt 0 ]; then
-            echo "::error::$errors issue(s) in agent file(s)"
-            exit 1
-          fi
-          echo "All agent files validated."
+              if not isinstance(doc, dict):
+                  print(f'  ERROR: frontmatter must be a YAML mapping')
+                  errors += 1
+                  continue
+
+              for field in ['name', 'description']:
+                  if field not in doc:
+                      print(f'  ERROR: missing required field: {field}')
+                      errors += 1
+
+              # model: must be array (fallback-ready)
+              if 'model' not in doc:
+                  print('  ERROR: missing model field')
+                  errors += 1
+              elif not isinstance(doc['model'], list):
+                  print(f'  ERROR: model must be an array (e.g. [\"gpt-5.2-codex\", \"claude-sonnet-4-6\"]), got {type(doc[\"model\"]).__name__}')
+                  errors += 1
+
+              # tools: must be array
+              if 'tools' not in doc:
+                  print('  ERROR: missing tools field')
+                  errors += 1
+              elif not isinstance(doc['tools'], list):
+                  print(f'  ERROR: tools must be an array, got {type(doc[\"tools\"]).__name__}')
+                  errors += 1
+
+              # version: semver
+              if 'version' not in doc:
+                  print('  ERROR: missing version field')
+                  errors += 1
+              elif not isinstance(doc['version'], str) or not semver_re.match(doc['version']):
+                  print(f'  ERROR: version must be semver, got: {doc.get(\"version\")}')
+                  errors += 1
+
+              print('  OK')
+
+          if errors:
+              print(f'::error::{errors} validation error(s)')
+              sys.exit(1)
+          print('All files validated.')
+          " || exit 1
