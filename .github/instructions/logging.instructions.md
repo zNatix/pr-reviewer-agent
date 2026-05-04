@@ -1,5 +1,7 @@
 ---
-applyTo: "**/*.cs"
+# Test files excluded — logging in tests follows test-framework conventions.
+# Migrations excluded — auto-generated code.
+applyTo: ["**/*.cs", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**", "!**/*Test*.cs", "!**/*Tests.cs"]
 excludeAgent: "coding-agent"
 ---
 

@@ -2,10 +2,10 @@
 name: pr-reviewer
 description: Senior PR reviewer for C# / Reqnroll / Gherkin / NUnit projects. Reviews diffs for bugs, security, performance, architecture, BDD coverage, and team standards. Enforces reusable code practices and Microsoft official conventions.
 # Rationale: GPT-5.2-Codex balances code review depth with cost at PR-sized context.
-# For deeper security analysis, switch to claude-sonnet-4 or claude-opus-4.
-# For lighter/faster reviews, switch to gpt-5-mini.
-# See https://docs.github.com/en/copilot/reference/ai-models/supported-models
-model: gpt-5.2-codex
+# Fallback: claude-sonnet-4-6 if GPT-5.2-Codex is unavailable or deprecated.
+# If both fail, the agent inherits the organization's default model.
+# Keep this list aligned with https://docs.github.com/en/copilot/reference/ai-models/supported-models
+model: ["gpt-5.2-codex", "claude-sonnet-4-6"]
 tools:
   - read
   - search
