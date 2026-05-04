@@ -119,7 +119,7 @@ The agent also reviews Playwright and Appium test code:
 | File | Scope | Read by |
 |---|---|---|
 | `copilot-instructions.md` | All PRs, all agents | Code Review + Coding Agent + Chat |
-| `*.instructions.md` | Per file type (via `applyTo`) | Code Review + Coding Agent (unless `excludeAgent` excludes) |
+| `*.instructions.md` | Per file type (via `applyTo`) | Code Review + Chat. Coding Agent excluded in this template — remove `excludeAgent` field from frontmatter if you want Coding Agent to honor them too |
 | `pr-reviewer.agent.md` | When `@pr-reviewer` is invoked | Custom agent persona only |
 
 ---

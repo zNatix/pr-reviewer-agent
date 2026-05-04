@@ -12,11 +12,23 @@ excludeAgent: "coding-agent"
 - Always use parameterized queries with EF Core, Dapper, or SqlCommand.Parameters
 - Flag any raw SQL string with `+` or string interpolation
 
+### Cross-Site Scripting (XSS)
+- Flag `@Html.Raw(userInput)` in Razor views without prior sanitization (HtmlSanitizer)
+- Flag `[AllowHtml]` on model properties without a dedicated sanitizer pipeline
+- Never set `innerHTML` or `outerHTML` from user input in client-side code — use `textContent` or DOM APIs
+- Flag `Microsoft.AspNetCore.Html.HtmlString` constructed from user-controlled data
+- Flag `HttpUtility.HtmlDecode()` followed by raw output without re-encoding
+- Use `IHtmlEncoder` (`System.Text.Encodings.Web.HtmlEncoder.Default`) for manual HTML encoding
+- Content-Security-Policy header with `script-src 'self'` as defense-in-depth layer
+
 ### Authentication & Authorization
 - All controller actions must have `[Authorize]` attribute or be explicitly public with documented reason
 - Authorization checks must happen server-side, never rely on client-side hiding
 - JWT/Token validation must check expiration, issuer, and signature
 - Never disable CSRF protection without explicit security review comment
+- All POST/PUT/PATCH/DELETE controller actions must include `[ValidateAntiForgeryToken]` (traditional MVC) or validate antiforgery via `IAntiforgery` (API with cookie auth)
+- APIs using bearer tokens (JWT) are inherently CSRF-safe; cookie-authenticated APIs require explicit antiforgery
+- Never set `SameSite=None` on auth cookies without `Secure=true`
 
 ### Secrets & Credentials
 - No hardcoded API keys, connection strings, tokens, or passwords
@@ -72,6 +84,14 @@ excludeAgent: "coding-agent"
 - HTTPS enforced everywhere — flag any HTTP endpoints
 - CORS policies must be specific (no `AllowAnyOrigin` with `AllowCredentials`)
 - Flag `AllowAnyHeader` + `AllowAnyMethod` + `AllowCredentials` — triple combination is a security hole
+
+### Cookie Security
+- Auth cookies must set `HttpOnly = true` (prevents `document.cookie` access from XSS)
+- Auth cookies must set `Secure = true` (HTTPS-only transport)
+- Auth cookies must set `SameSite = Strict` or `SameSite = Lax` (CSRF defense). Never `SameSite = None` on auth cookies without documenting why cross-site auth is required
+- Flag `Cookie.Secure = false` in production configuration
+- Flag `Cookie.HttpOnly = false` on session or auth cookies
+- Anti-forgery tokens should be scoped per user session, not shared across users
 
 ### Dependency Security
 - Flag packages with known CVEs (check if updated in PR)
