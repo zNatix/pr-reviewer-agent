@@ -3,7 +3,7 @@ version: "1.0.0"
 # Test files excluded — logging in tests follows test-framework conventions.
 # Migrations excluded — auto-generated code.
 applyTo: ["**/*.cs", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**", "!**/*Test*.cs", "!**/*Tests.cs"]
-excludeAgent: ["coding-agent"]
+excludeAgent: "coding-agent"
 ---
 
 # Logging Standards — C# / .NET

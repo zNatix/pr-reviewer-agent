@@ -1,7 +1,7 @@
 ---
 applyTo: ["**/*.cs", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**"]
 version: "1.0.0"
-excludeAgent: ["coding-agent"]
+excludeAgent: "coding-agent"
 ---
 
 # Entity Framework Core Standards — C# / .NET

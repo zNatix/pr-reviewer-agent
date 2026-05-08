@@ -1,7 +1,7 @@
 ---
 applyTo: "**"
 version: "1.0.0"
-excludeAgent: ["coding-agent"]
+excludeAgent: "coding-agent"
 ---
 
 # Code Review Output Format

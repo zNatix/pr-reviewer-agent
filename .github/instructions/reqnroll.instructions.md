@@ -1,7 +1,7 @@
 ---
 applyTo: ["**/Steps/**/*.cs", "**/StepDefinitions/**/*.cs", "**/Hooks/**/*.cs", "**/Hooks.cs"]
 version: "1.0.0"
-excludeAgent: ["coding-agent"]
+excludeAgent: "coding-agent"
 ---
 
 # Reqnroll Step Definitions & Hooks Standards
