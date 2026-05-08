@@ -36,6 +36,8 @@ For detailed rules by domain, read the corresponding instruction file when a PR 
 | Gherkin feature files | `.github/instructions/gherkin.instructions.md` | `**/*.feature` |
 | Reqnroll step defs & hooks | `.github/instructions/reqnroll.instructions.md` | `**/Steps/**, **/StepDefinitions/**` |
 | NUnit tests | `.github/instructions/nunit.instructions.md` | `**/*.cs` (tests) |
+| xUnit tests | `.github/instructions/xunit.instructions.md` | `**/*.cs` (tests) |
+| MSTest tests | `.github/instructions/mstest.instructions.md` | `**/*.cs` (tests) |
 | Logging | `.github/instructions/logging.instructions.md` | `**/*.cs` |
 | Dependency Injection | `.github/instructions/di.instructions.md` | `**/*.cs` |
 | Entity Framework Core | `.github/instructions/efcore.instructions.md` | `**/*.cs` |
