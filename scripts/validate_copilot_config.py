@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
 Validate GitHub Copilot custom instructions and agent frontmatter.
-Enforces documented schema compatibility and size limits.
+Enforces documented schema compatibility, size limits, and semantic rules.
 """
 
 import glob
+import os
 import re
 import sys
 
@@ -16,6 +17,8 @@ WARN_AT = 3500
 errors = 0
 warnings = 0
 semver_re = re.compile(r"^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$")
+DEPRECATED_MODELS = {"gpt-5.2-codex", "gpt-5.2"}
+ALLOWED_EXCLUDE_AGENTS = {"coding-agent", "code-review", "cloud-agent"}
 
 
 def extract_frontmatter(path: str):
@@ -41,8 +44,28 @@ def check_size(path: str, content: str):
     return 0
 
 
+def collect_instruction_files() -> set:
+    return set(glob.glob(".github/instructions/*.instructions.md"))
+
+
+def check_instruction_references(path: str, content: str, existing: set, strict: bool = True):
+    global errors, warnings
+    found = set(re.findall(r"[\w\-]+\.instructions\.md", content))
+    for ref in found:
+        full = os.path.join(".github/instructions", ref)
+        if full not in existing:
+            if strict:
+                print(f"  ERROR: references non-existent instruction file: {ref}")
+                errors += 1
+            else:
+                print(f"  WARNING: references non-existent instruction file: {ref}")
+                warnings += 1
+
+
+existing_instructions = collect_instruction_files()
+
 # Validate instruction files
-for f in sorted(glob.glob(".github/instructions/*.instructions.md")):
+for f in sorted(existing_instructions):
     print(f"Checking {f}")
     fm, err, content = extract_frontmatter(f)
     if err:
@@ -75,6 +98,10 @@ for f in sorted(glob.glob(".github/instructions/*.instructions.md")):
         ea = doc["excludeAgent"]
         if isinstance(ea, list) and len(ea) == 1:
             print(f"  WARNING: excludeAgent is an array with one item; prefer scalar string: {ea[0]!r}")
+            warnings += 1
+        val = ea[0] if isinstance(ea, list) else ea
+        if val not in ALLOWED_EXCLUDE_AGENTS:
+            print(f"  WARNING: excludeAgent value {val!r} not in known allowlist {ALLOWED_EXCLUDE_AGENTS}")
             warnings += 1
 
     # version: must be semver string
@@ -114,11 +141,18 @@ for f in sorted(glob.glob(".github/agents/*.agent.md")):
             print(f"  ERROR: missing required field: {field}")
             errors += 1
 
-    # model: must be string (or omitted)
+    # model: must be string (or omitted), and not deprecated
     if "model" in doc:
-        if not isinstance(doc["model"], str):
-            print(f'  ERROR: model must be a string or omitted, got {type(doc["model"]).__name__}')
+        m = doc["model"]
+        if not isinstance(m, str):
+            print(f'  ERROR: model must be a string or omitted, got {type(m).__name__}')
             errors += 1
+        else:
+            if m.lower() in DEPRECATED_MODELS:
+                print(f'  ERROR: model {m!r} is deprecated — omit or use a supported model')
+                errors += 1
+    else:
+        print("  INFO: model omitted — Copilot will select the best available model")
 
     # tools: must be array
     if "tools" not in doc:
@@ -128,8 +162,13 @@ for f in sorted(glob.glob(".github/agents/*.agent.md")):
         print(f'  ERROR: tools must be an array, got {type(doc["tools"]).__name__}')
         errors += 1
     else:
-        if "execute" in doc["tools"]:
-            print(f"  WARNING: agent includes 'execute' tool — ensure this is intentional and restricted to trusted branches")
+        has_execute = "execute" in doc["tools"]
+        is_trusted = "trusted" in os.path.basename(f).lower()
+        if has_execute and not is_trusted:
+            print(f"  ERROR: non-trusted agent includes 'execute' tool — remove it or rename agent to include 'trusted'")
+            errors += 1
+        elif has_execute:
+            print(f"  WARNING: trusted agent includes 'execute' tool — ensure this is restricted to trusted branches")
             warnings += 1
 
     # version: semver
@@ -140,6 +179,18 @@ for f in sorted(glob.glob(".github/agents/*.agent.md")):
         print(f'  ERROR: version must be semver, got: {doc.get("version")}')
         errors += 1
 
+    # semantic: references to instruction files
+    check_instruction_references(f, content, existing_instructions)
+
+    print("  OK")
+
+# Validate README for stale references
+readme_path = "README.md"
+if os.path.exists(readme_path):
+    print(f"Checking {readme_path}")
+    with open(readme_path, encoding="utf-8") as f:
+        readme_content = f.read()
+    check_instruction_references(readme_path, readme_content, existing_instructions, strict=False)
     print("  OK")
 
 if errors:
