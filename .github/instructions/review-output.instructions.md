@@ -23,6 +23,32 @@ For each finding, use this exact format:
 
 Group findings by file. Summarize at the top with an overall verdict.
 
+## Diff Coverage (mandatory)
+
+Before findings, include a Diff Coverage block that proves every changed hunk was considered:
+
+```
+## Diff Coverage
+- Files changed: X
+- Files reviewed: X
+- Files skipped: X (list with reason)
+- Changed hunks reviewed: X
+- Skipped hunks: X (list with reason)
+
+### Review Chapters
+1. **Title** — files/hunks covered
+2. ...
+
+### Human Judgment Questions
+- Question (location)
+```
+
+Rules:
+- Every changed file must appear under reviewed or skipped.
+- Every changed hunk must be accounted for exactly once.
+- Skipped files/hunks need a reason matching `diff-review.instructions.md`.
+- Human judgment questions only for decisions a human must make; bugs go into findings.
+
 ## Summary Template
 
 At the end of every review, include:
