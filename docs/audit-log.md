@@ -25,3 +25,13 @@
 - Path-specific instructions support varies by client (GitHub.com vs IDE).
 
 **Result:** Implementation plan created and approved.
+
+## 2026-05-08 — Implementation Executed
+
+**Commits:**
+1. `audit(fix): baseline F0` — audit-log, README smoke claim fix, link fix, CONTRIBUTING excludeAgent fix.
+2. `audit(fix): CI hardening + validator strictness` — SHA pinning, Dependabot, strict-warnings, `applyTo`/`excludeAgent` checks.
+3. `audit(fix): rules + examples` — `secrets.instructions.md`, XSS coverage, performance severity recalibration, DI/EF/auth rule fixes, good/bad pair alignment.
+4. `audit(fix): smoke tests redesign + roadmap` — per-client ST-05 split, ST-06 model loading, ST-02 isolation fix.
+
+**Validation:** `python scripts/validate_copilot_config.py --strict-warnings` passes (6 warnings: file size, trusted execute, non-existent optional refs).
