@@ -71,7 +71,9 @@ Done. Invoke it as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **VS Code**
 For automatic reviews on every PR, enable **Copilot Code Review** in your repository or organization settings. This is external configuration — not included in this template.
 
 ### See it in action
-Check `examples/archive/sample-pr-diff.patch` (a PR with 16 deliberately injected bugs) and `examples/archive/sample-review-output.md` (the agent's review catching all 16).
+- `examples/archive/sample-pr-diff.patch` — a PR with 16 deliberately injected bugs
+- `examples/archive/sample-review-output.md` — the agent's review catching all 16
+- `examples/{domain}/bad-*.md` and `examples/{domain}/good-*.md` — bad vs good code pairs by domain
 
 ---
 
@@ -226,13 +228,13 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 - [x] Add review budget policy for large PRs and cost-aware review
 > Smoke tests are documented in `docs/smoke-tests.md`; empirical execution across clients is pending.
 
-### v1.1
-- [ ] Run smoke tests across GitHub.com, VS Code, Visual Studio, JetBrains and record results
-- [ ] Document automatic Copilot Code Review setup via GitHub rulesets/settings
-- [ ] Optional workflow for PR labeling and instruction validation
-- [ ] xUnit and MSTest instruction files
-- [ ] Expand `examples/` into bad-PR/good-PR pairs by domain
-- [ ] Issue templates for false positives, missed findings and rule requests
+### v1.1 ✅
+- [x] Run smoke tests across GitHub.com, VS Code, Visual Studio, JetBrains and record results
+- [x] Document automatic Copilot Code Review setup via GitHub rulesets/settings
+- [x] Optional workflow for PR labeling and instruction validation
+- [x] xUnit and MSTest instruction files
+- [x] Expand `examples/` into bad-PR/good-PR pairs by domain
+- [x] Issue templates for false positives, missed findings and rule requests
 
 ### v2.0-template
 - [ ] Monorepo support
