@@ -23,10 +23,10 @@ excludeAgent: "coding-agent"
 - Use `[SetUp]` / `TestInitialize` for per-test preconditions, not for business logic
 
 ### Run Configuration
-- Browser name via `.runsettings` or CLI: `Playwright.BrowserName=chromium|firefox|webkit`
-- Headless mode configurable via `Playwright.LaunchOptions.Headless=false`
-- Parallelization: MSTest uses `ExecutionScope.ClassLevel` by default; NUnit supports `[Parallelizable]`
-- Use `DEBUG=pw:api` for verbose API logging when debugging
+- Browser via `.runsettings` or CLI: `Playwright.BrowserName=chromium|firefox|webkit`
+- Headless via `Playwright.LaunchOptions.Headless`
+- Parallel: NUnit `[Parallelizable]`; MSTest `ExecutionScope.ClassLevel`
+- `DEBUG=pw:api` for verbose logging
 
 ## Locators (CRITICAL)
 
