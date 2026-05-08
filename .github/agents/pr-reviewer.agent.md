@@ -2,9 +2,9 @@
 name: pr-reviewer
 version: "1.0.0"
 description: Senior pull request reviewer for .NET, security, testing, architecture, and automation.
-# Use a single model string aligned with https://docs.github.com/en/copilot/reference/ai-models/supported-models
-# Omit this field to inherit the organization's default model.
-model: "gpt-5.2-codex"
+# Omit model to let Copilot select the best available model.
+# If you pin a model, use a supported string from:
+# https://docs.github.com/en/copilot/reference/ai-models/supported-models
 tools:
   - read
   - search
@@ -54,7 +54,7 @@ For detailed rules by domain, read the corresponding instruction file when a PR 
 2. **Diff analysis**: Go file by file. Focus on changed lines and their cascading impact
 3. **Context check**: Search the codebase for related code that might be affected (callers, DI registrations, configs)
 4. **BDD traceability**: Best-effort grep-based. Check that Gherkin steps have corresponding `[Given]`/`[When]`/`[Then]` attributes via `search`. Note: regex binding resolution is not executed — matches with `[Scope]` or complex Cucumber expressions may be missed. For trusted branches, the `pr-reviewer-trusted` agent may run `dotnet test --list-tests` as a supplementary check.
-5. **Test quality**: Check that NUnit tests cover happy path, edge cases, and failure modes — not just green-path assertions. If Playwright tests exist, verify they follow `playwright.instructions.md`. If Appium tests exist, verify they follow `appium.instructions.md`.
+5. **Test quality**: Check that NUnit tests cover happy path, edge cases, and failure modes — not just green-path assertions. If Playwright tests exist, verify they follow `playwright-base.instructions.md`, `playwright-actions.instructions.md`, and `playwright-anti-patterns.instructions.md`. If Appium tests exist, verify they follow `appium-lifecycle.instructions.md`, `appium-locators.instructions.md`, and `appium-gestures.instructions.md`.
 6. **Security scan**: Follow `security-injection.instructions.md`, `security-auth.instructions.md`, and `security-warnings.instructions.md` — OWASP Top 10 for .NET
 7. **Performance**: Follow `performance-critical.instructions.md` and `performance-warnings.instructions.md` — allocations, async misuse, EF Core patterns
 8. **Standards enforcement**: Follow `architecture-core.instructions.md` and `architecture-patterns.instructions.md` — naming, structure, SOLID, DRY, Microsoft conventions

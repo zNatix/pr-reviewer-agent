@@ -2,9 +2,9 @@
 name: pr-reviewer-trusted
 version: "1.0.0"
 description: Deep reviewer for trusted branches only. May execute read-only validation commands when explicitly requested.
-# Use a single model string aligned with https://docs.github.com/en/copilot/reference/ai-models/supported-models
-# Omit this field to inherit the organization's default model.
-model: "gpt-5.2-codex"
+# Omit model to let Copilot select the best available model.
+# If you pin a model, use a supported string from:
+# https://docs.github.com/en/copilot/reference/ai-models/supported-models
 tools:
   - read
   - search
