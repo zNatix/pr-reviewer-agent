@@ -8,6 +8,9 @@ Pin third-party actions to a full-length commit SHA and annotate the expected ve
 name: Build
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -13,7 +13,7 @@ excludeAgent: "coding-agent"
 - `.Result` or `.Wait()` on async Playwright methods — always `await`
 - `Thread.Sleep()` or `Task.Delay()` as synchronization mechanism — use assertions with auto-wait
 - Hardcoded URLs in tests (use `ContextOptions().BaseURL` or configuration)
-- Missing `[TearDown]` / `TestCleanup` that disposes resources
+- Missing teardown for manually created resources (custom contexts, `RouteAsync`, external servers); base class lifecycle (`PageTest`/`ContextTest`) handles standard disposal automatically
 
 ### 🟡 Warning
 - XPath locators or CSS locators when role/text/label locators are available
@@ -28,5 +28,5 @@ excludeAgent: "coding-agent"
 - Missing `data-testid` attributes when CSS selectors are used repeatedly
 - Tests longer than 30 lines without helper methods
 - Duplicate locator chains across tests (extract to Page Object or helper)
-- Not using `filter()` when `.Nth()` would be clearer
+- Using `.Nth()` when `filter()` would be clearer/stabler
 - Overriding `ContextOptions()` without calling `base.ContextOptions()` for defaults

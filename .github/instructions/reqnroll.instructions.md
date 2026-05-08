@@ -27,8 +27,9 @@ excludeAgent: "coding-agent"
 - Migrating from SpecFlow: replace `TechTalk.SpecFlow` namespace with `Reqnroll`
 
 ### Dependency Injection (Reqnroll-specific)
-- Reqnroll supports `Microsoft.Extensions.DependencyInjection` directly (unlike SpecFlow)
-- Use `IObjectContainer` for step-level context, not `IServiceProvider`
+- Reqnroll supports `Microsoft.Extensions.DependencyInjection` via plugins when configured
+- Use `IObjectContainer` for Reqnroll-native wiring (hooks, step definitions); avoid direct `IServiceProvider.Resolve` inside step definitions (service locator anti-pattern)
+- Application services should be injected via constructor in step definition classes when Microsoft DI is configured; otherwise use `IObjectContainer` with clear lifetime boundaries
 - Context classes injected via constructor or `[ScenarioContext]` / `[FeatureContext]`
 
 ### Flag Immediately

@@ -19,10 +19,10 @@
 - Hardcoded secrets, keys, connection strings
 - SQL concatenation without parameterization
 - `async void` (except event handlers); `.Result`/`.Wait()` on async
-- `new HttpClient()` — use `IHttpClientFactory`
+- `new HttpClient()` in production services — use `IHttpClientFactory`; short-lived tests, console apps, or one-off scripts may use `new HttpClient()` if justified
 - Empty `catch (Exception)` without rethrow or logging
 - Missing Reqnroll step defs for new Gherkin scenarios
-- Public methods without XML docs
+- Public library/API methods without XML docs (SDK contracts, NuGet packages); internal application code is a Warning/Suggestion
 - Tests asserting nothing meaningful (`Assert.True(true)`, `Is.NotNull` only)
 
 ## Instruction Files

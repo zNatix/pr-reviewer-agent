@@ -1,6 +1,6 @@
 # Bad Practice: Missing Input Validation
 
-## 🟡 Warning
+## 🔴 Critical
 
 Accepting unvalidated model state can lead to invalid data persistence, downstream errors, or unexpected behavior.
 
@@ -14,4 +14,4 @@ public async Task<IActionResult> CreateOrder(Order order)
 }
 ```
 
-**Expected finding:** Flag as 🟡 Warning because there is no `[ApiController]` model validation check and no explicit `ModelState.IsValid` guard.
+**Expected finding:** Flag as 🔴 Critical because there is no `[ApiController]` model validation, no explicit `ModelState.IsValid` guard, and the endpoint accepts an EF entity directly.

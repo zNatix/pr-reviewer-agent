@@ -10,7 +10,7 @@ excludeAgent: "coding-agent"
 
 ### Appium/Selenium does NOT have Playwright-style auto-waiting
 - ✅ Use explicit waits: `WebDriverWait` with `ExpectedConditions`
-- ✅ Use `driver.Manage().Timeouts().ImplicitWait` (set once, applies to all `FindElement` calls)
+- ⚠️ `driver.Manage().Timeouts().ImplicitWait` may be set globally, but never mix it with `WebDriverWait` in the same interaction
 - ❌ `Thread.Sleep()` or `Task.Delay()` as synchronization — flaky, slow
 - ❌ `.Result` or `.Wait()` on async Appium operations — always `await`
 

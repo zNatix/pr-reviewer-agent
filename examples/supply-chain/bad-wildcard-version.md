@@ -1,6 +1,6 @@
 # Bad Practice: Wildcard Dependency Versions
 
-## 🟡 Warning
+## 🔴 Critical
 
 Wildcard or floating version ranges allow unreviewed package updates to enter the build, introducing breaking changes or malware.
 
@@ -11,4 +11,4 @@ Wildcard or floating version ranges allow unreviewed package updates to enter th
 </ItemGroup>
 ```
 
-**Expected finding:** Flag as 🟡 Warning because wildcard and open-range versions enable silent upgrades that bypass lockfile and supply-chain review.
+**Expected finding:** Flag as 🔴 Critical because wildcard and open-range versions enable silent upgrades that bypass lockfile and supply-chain review.

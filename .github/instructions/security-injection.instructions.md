@@ -1,5 +1,5 @@
 ---
-applyTo: ["**/*.cs", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**"]
+applyTo: ["**/*.cs", "**/*.cshtml", "**/*.razor", "**/*.js", "**/*.ts", "**/*.tsx", "!**/*.g.cs", "!**/*.Designer.cs", "!**/Migrations/**"]
 version: "1.0.0"
 excludeAgent: "coding-agent"
 ---
@@ -37,7 +37,8 @@ excludeAgent: "coding-agent"
 - Patterns with nested quantifiers (`(a+)+`, `(.*)*`, etc.) on untrusted input
 
 ### Open Redirect
-- `Redirect(url)` or `LocalRedirect()` from query string or user input → must validate with `Url.IsLocalUrl()` before redirecting
+- `Redirect(url)` from query string or user input → must validate with `Url.IsLocalUrl()` before redirecting (Critical)
+- `LocalRedirect(url)` from user input → Warning if not pre-validated; note that `LocalRedirect` already throws for non-local URLs, but explicit validation improves error handling
 - Flag any `return Redirect(userProvidedUrl)` in controller actions
 
 ### Mass Assignment

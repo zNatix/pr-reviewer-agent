@@ -12,7 +12,7 @@ excludeAgent: "coding-agent"
 - Use `Select()` to fetch only needed columns — avoid `SELECT *`
 - Use `Any()` for existence checks; never `Count() > 0` or `ToList().Any()`
 - Use `AsSplitQuery()` when eager-loading multiple collections to avoid cartesian explosion
-- Use `IQueryable` at the repository boundary; materialize (`ToListAsync`, `FirstOrDefaultAsync`) at the service/controller level
+- Materialize queries (`ToListAsync`, `FirstOrDefaultAsync`) at the service/application layer; avoid exposing `IQueryable` to controllers or public APIs
 
 ## Tracking & Change Detection
 - Know when tracking is needed: updates/deletes use tracking; reads use `AsNoTracking()`

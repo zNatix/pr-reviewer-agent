@@ -36,5 +36,5 @@ excludeAgent: "coding-agent"
 - `IServiceProvider.GetService<T>()` or `GetRequiredService<T>()` inside services/controllers
 - `new MyService()` inside a class that receives DI (bypasses the container)
 - Static `HttpClient` or `new HttpClient()` instead of `IHttpClientFactory`
-- Transient service depending on Scoped/Transient DbContext (EF Core contexts are Scoped)
+- Singleton service depending on Scoped DbContext (captive dependency); Transient depending on Scoped is acceptable if resolved within the request scope
 - Singleton service holding mutable state without `ConcurrentDictionary` or locking

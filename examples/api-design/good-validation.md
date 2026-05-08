@@ -2,19 +2,37 @@
 
 ## ✅ Good Practice
 
-Validate incoming models explicitly and return a 400 Bad Request when validation fails.
+Validate incoming models explicitly, use DTOs at the boundary, and return structured problem details.
 
 ```csharp
-[HttpPost]
-public async Task<IActionResult> CreateOrder([FromBody] Order order)
+[Authorize]
+[ApiController]
+[Route("api/orders")]
+public class OrdersController : ControllerBase
 {
-    if (!ModelState.IsValid)
-        return BadRequest(ModelState);
+    [HttpPost]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateOrder(
+        [FromBody] CreateOrderDto dto,
+        CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
 
-    _db.Orders.Add(order);
-    await _db.SaveChangesAsync();
-    return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+        var order = MapToEntity(dto);
+        _db.Orders.Add(order);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        var result = MapToDto(order);
+        return CreatedAtAction(nameof(GetOrder), new { id = result.Id }, result);
+    }
 }
 ```
 
-This ensures only well-formed data reaches the database and clients receive meaningful error responses.
+Rules demonstrated:
+- DTO at controller boundary (no EF entity exposure)
+- `[Authorize]` applied
+- `CancellationToken` propagated
+- `ValidationProblemDetails` returned for 400s
+- `CreatedAtAction` with DTO

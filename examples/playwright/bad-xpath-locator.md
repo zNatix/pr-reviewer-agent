@@ -19,4 +19,7 @@ public async Task Login_WithValidCredentials_RedirectsToDashboard()
 }
 ```
 
-**Expected finding:** Flag as 🟡 Warning due to brittle XPath locators, `Thread.Sleep` synchronization, and blocking `.Result` on an async call.
+**Expected findings:**
+- Brittle XPath locators → 🟡 Warning
+- `Thread.Sleep` as synchronization → 🟡 Warning
+- Blocking `.Result` on async call → at least 🟡 Warning (may be treated as 🔴 Critical per async rules in production contexts)
