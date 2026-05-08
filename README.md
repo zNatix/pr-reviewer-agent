@@ -71,7 +71,7 @@ Done. Invoke it as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **VS Code**
 For automatic reviews on every PR, enable **Copilot Code Review** in your repository or organization settings. This is external configuration — not included in this template.
 
 ### See it in action
-Check `examples/sample-pr-diff.patch` (a PR with 16 deliberately injected bugs across security, Playwright, and Appium) and `examples/sample-review-output.md` (the agent's review catching all 16).
+Check `examples/archive/sample-pr-diff.patch` (a PR with 16 deliberately injected bugs) and `examples/archive/sample-review-output.md` (the agent's review catching all 16).
 
 ---
 
@@ -161,8 +161,8 @@ The agent also reviews Playwright and Appium test code:
 
 | Your framework | Change |
 |---|---|
-| **xUnit instead of NUnit** | Replace `nunit.instructions.md` with xUnit equivalent (naming, assertions, traits) |
-| **MSTest** | Replace `nunit.instructions.md`; update test categories |
+| **xUnit instead of NUnit** | Keep `nunit.instructions.md` for reference; add `xunit.instructions.md` (naming, assertions, `IClassFixture`, `[Theory]`) |
+| **MSTest** | Keep `nunit.instructions.md` for reference; add `mstest.instructions.md` (`[TestMethod]`, `[DataRow]`, `[TestInitialize]`) |
 | **SpecFlow (not Reqnroll)** | Rename `reqnroll.instructions.md`; update namespaces to `TechTalk.SpecFlow` |
 | **Dapper (not EF Core)** | Keep `efcore.instructions.md` for reference but add `dapper.instructions.md` |
 | **Minimal APIs** | Add `api-design.instructions.md` with endpoint conventions |
@@ -180,6 +180,8 @@ The agent enforces a **25-file cap per review** to control AI credit consumption
 - Dependabot PRs get security-only review (skips BDD traceability + test quality)
 - Findings capped at 30 items for readability
 
+For detailed thresholds and cost-aware policies, see [`docs/review-budget.md`](docs/review-budget.md).
+
 ---
 
 ## Known Limitations
@@ -190,7 +192,7 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 |---|---|---|
 | **BDD traceability is grep-based, not AST-resolved** | May miss step definition matches when `[Scope]` attribute is used or Cucumber expressions are complex | Run `dotnet test --list-tests` as supplementary check (the agent will try this if Reqnroll project detected) |
 | **Instruction files split to stay under Copilot Code Review's 4KB-per-file context limit** | Files are now split so each stays below the limit. Verify with `scripts/validate_copilot_config.py` | Keep new files under 3,800 characters |
-| **`excludeAgent: "coding-agent"` behavior partially smoke-tested** | Documented in [official changelog](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/). See [`docs/smoke-tests.md`](docs/smoke-tests.md) for the test matrix and results. May vary by client. | Run the tests in your target environment and report results |
+| **`excludeAgent: "coding-agent"` behavior partially smoke-tested** | The Nov 12 2025 changelog documents `"coding-agent"`, but current GitHub docs list only `"code-review"` and `"cloud-agent"`. See [`docs/smoke-tests.md`](docs/smoke-tests.md) for the test matrix. Behavior may vary by client. | Run the tests in your target environment and report results |
 | **Not tested on PRs >100 files** | Token budget caps at 25 files — the rest are listed as skipped. On massive PRs, important changes may be in the skipped portion | Split large PRs; the agent will list skipped files explicitly |
 | **Severity tiers are guidance, not enforcement** | LLM non-determinism: the agent may classify the same bug as 🟡 Warning on one run and 🔴 Critical on another | Use as first-pass triage, not final gate. Human reviewer always has final say |
 | **No CI status checking** | The agent cannot verify if CI is green — it will remind you to check manually | Enable branch protection rules with required checks in GitHub |
@@ -201,14 +203,14 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 ## Roadmap
 
 ### v1.0 ✅ (current)
-- [x] 12 review domains implemented as split `.instructions.md` files
+- [x] 15 review domains / 23 split instruction files implemented
 - [x] Token budget with scoping, Dependabot fast-path, skip patterns
 - [x] Dual-mode documentation (Automatic Code Review vs `@pr-reviewer` Chat)
 - [x] Prompt injection defense
 - [x] Iterative architecture/security audits with external feedback
 - [x] Stack adaptation guide (xUnit, MSTest, SpecFlow, Dapper, Selenium, Minimal APIs)
 
-### v1.0.1 (next patch)
+### v1.0.1 ✅ (current patch)
 - [x] Fix `model` frontmatter to string (was array)
 - [x] Remove `execute` from default agent; create `pr-reviewer-trusted` agent
 - [x] Split instruction files to stay under 4KB Copilot Code Review limit
