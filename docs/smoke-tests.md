@@ -22,6 +22,8 @@
 | ST-05c | IDE parity — Visual Studio | Document findings in Visual Studio | 1. Run ST-01 in Visual Studio.<br>2. Record findings and severity alignment. | Results documented in Results Log. | Not run |
 | ST-05d | IDE parity — JetBrains | Document findings in JetBrains IDEs | 1. Run ST-01 in JetBrains.<br>2. Record findings and severity alignment. | Results documented in Results Log. | Not run |
 | ST-06 | Model loading | Verify agent loads with omitted model and no deprecated model warnings | 1. Load `@pr-reviewer` and `@pr-reviewer-trusted`.<br>2. Check that no deprecated model (e.g., `gpt-5.2-codex`) is referenced.<br>3. Confirm client-selected model is visible/acceptable. | Agent loads without model warnings. | Not run |
+| ST-07 | Diff Coverage contract | Verify review output includes Diff Coverage, Review Chapters, and Human Judgment Questions | 1. Open a test PR with 3 files (see `examples/archive/sample-pr-diff.patch`).<br>2. Invoke `@pr-reviewer`. | Output includes `## Diff Coverage`, `### Review Chapters`, `### Human Judgment Questions`. | Not run |
+| ST-08 | Large PR skip list | Verify agent lists skipped files when PR >25 files | 1. Open a test PR with >25 changed files.<br>2. Invoke `@pr-reviewer`. | Output lists skipped files by name/pattern and provides Diff Map for top 25. | Not run |
 
 ## Results Log
 
