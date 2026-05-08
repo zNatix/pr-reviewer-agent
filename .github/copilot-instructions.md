@@ -34,29 +34,30 @@
 
 ## Instruction Files
 
-Domain-specific rule files in `.github/instructions/` apply during code review. Each file uses `excludeAgent: "coding-agent"` because these are review rules (flagging anti-patterns, enforcing conventions), not code-generation rules. Remove the `excludeAgent` field if you want the Coding Agent to also follow these rules when generating code.
-
-For detailed, domain-specific rules used during code review, see:
+Domain-specific rule files in `.github/instructions/` apply during code review. Each file uses `excludeAgent: "coding-agent"` because these are review rules, not code-generation rules. Remove the field if you want the Coding Agent to also follow them.
 
 | Domain | File |
 |--------|------|
-| Security — Injection & Input Validation | `.github/instructions/security-injection.instructions.md` |
-| Security — Auth, Secrets & Deserialization | `.github/instructions/security-auth.instructions.md` |
-| Security — Warnings (crypto, headers, cookies, dependencies) | `.github/instructions/security-warnings.instructions.md` |
-| Architecture — Core (SOLID, DRY, DI, naming, flags) | `.github/instructions/architecture-core.instructions.md` |
-| Architecture — Patterns (nullable, records, IAsyncEnumerable) | `.github/instructions/architecture-patterns.instructions.md` |
-| Performance — Critical (EF Core, async, memory, HTTP) | `.github/instructions/performance-critical.instructions.md` |
-| Performance — Warnings (collections, LINQ, logging, concurrency) | `.github/instructions/performance-warnings.instructions.md` |
-| Gherkin feature files | `.github/instructions/gherkin.instructions.md` |
-| Reqnroll step definitions & hooks | `.github/instructions/reqnroll.instructions.md` |
-| NUnit test standards | `.github/instructions/nunit.instructions.md` |
+| Security — Injection | `.github/instructions/security-injection.instructions.md` |
+| Security — Auth | `.github/instructions/security-auth.instructions.md` |
+| Security — Warnings | `.github/instructions/security-warnings.instructions.md` |
+| Architecture — Core | `.github/instructions/architecture-core.instructions.md` |
+| Architecture — Patterns | `.github/instructions/architecture-patterns.instructions.md` |
+| Performance — Critical | `.github/instructions/performance-critical.instructions.md` |
+| Performance — Warnings | `.github/instructions/performance-warnings.instructions.md` |
+| Gherkin | `.github/instructions/gherkin.instructions.md` |
+| Reqnroll | `.github/instructions/reqnroll.instructions.md` |
+| NUnit | `.github/instructions/nunit.instructions.md` |
 | Logging | `.github/instructions/logging.instructions.md` |
-| Dependency Injection | `.github/instructions/di.instructions.md` |
-| Entity Framework Core | `.github/instructions/efcore.instructions.md` |
-| Review output format | `.github/instructions/review-output.instructions.md` |
-| Playwright — Base & Locators | `.github/instructions/playwright-base.instructions.md` |
-| Playwright — Actions & Network | `.github/instructions/playwright-actions.instructions.md` |
+| DI | `.github/instructions/di.instructions.md` |
+| EF Core | `.github/instructions/efcore.instructions.md` |
+| Output format | `.github/instructions/review-output.instructions.md` |
+| Playwright — Base | `.github/instructions/playwright-base.instructions.md` |
+| Playwright — Actions | `.github/instructions/playwright-actions.instructions.md` |
 | Playwright — Anti-patterns | `.github/instructions/playwright-anti-patterns.instructions.md` |
-| Appium — Lifecycle & Capabilities | `.github/instructions/appium-lifecycle.instructions.md` |
-| Appium — Locators & Context | `.github/instructions/appium-locators.instructions.md` |
-| Appium — Gestures & Anti-patterns | `.github/instructions/appium-gestures.instructions.md` |
+| Appium — Lifecycle | `.github/instructions/appium-lifecycle.instructions.md` |
+| Appium — Locators | `.github/instructions/appium-locators.instructions.md` |
+| Appium — Gestures | `.github/instructions/appium-gestures.instructions.md` |
+| API Design | `.github/instructions/api-design.instructions.md` |
+| GitHub Actions | `.github/instructions/github-actions.instructions.md` |
+| Supply Chain | `.github/instructions/supply-chain.instructions.md` |
