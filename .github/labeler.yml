@@ -1,0 +1,26 @@
+# Labeler configuration for .github/workflows/pr-labeler.yml
+# Docs: https://github.com/actions/labeler
+
+instructions:
+  - changed-files:
+      - any-glob-to-any-file: '.github/instructions/**'
+
+agents:
+  - changed-files:
+      - any-glob-to-any-file: '.github/agents/**'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: 'docs/**'
+
+examples:
+  - changed-files:
+      - any-glob-to-any-file: 'examples/**'
+
+scripts:
+  - changed-files:
+      - any-glob-to-any-file: 'scripts/**'
+
+workflow:
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/**'
