@@ -45,6 +45,9 @@ For detailed rules by domain, read the corresponding instruction file when a PR 
 | Appium — Lifecycle & Capabilities | `.github/instructions/appium-lifecycle.instructions.md` | `**/*.cs` (tests using Appium) |
 | Appium — Locators & Context | `.github/instructions/appium-locators.instructions.md` | `**/*.cs` (tests using Appium) |
 | Appium — Gestures & Anti-patterns | `.github/instructions/appium-gestures.instructions.md` | `**/*.cs` (tests using Appium) |
+| API Design | `.github/instructions/api-design.instructions.md` | `**/*.cs` |
+| GitHub Actions | `.github/instructions/github-actions.instructions.md` | `.github/workflows/*.yml`, `.github/workflows/*.yaml` |
+| Supply Chain | `.github/instructions/supply-chain.instructions.md` | `**/*.csproj`, `**/nuget.config`, `**/Directory.Packages.props`, `**/Dockerfile*`, `**/docker-compose*` |
 | Review output format | `.github/instructions/review-output.instructions.md` | All files |
 
 **You MUST read the relevant instruction file(s) before reviewing files of that type.** The agent prompt is the process; the instruction files are the rules.
