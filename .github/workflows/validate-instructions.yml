@@ -3,12 +3,23 @@ name: Validate Instructions
 on:
   pull_request:
     paths:
+      - '.github/copilot-instructions.md'
       - '.github/instructions/*.instructions.md'
       - '.github/agents/*.agent.md'
+      - '.github/workflows/*.yml'
+      - 'README.md'
+      - 'examples/**'
   push:
     paths:
+      - '.github/copilot-instructions.md'
       - '.github/instructions/*.instructions.md'
       - '.github/agents/*.agent.md'
+      - '.github/workflows/*.yml'
+      - 'README.md'
+      - 'examples/**'
+
+permissions:
+  contents: read
 
 jobs:
   validate:
@@ -16,127 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install "pyyaml==6.0.2"
+
       - name: Validate frontmatter with YAML parser
-        run: |
-          python3 -c "
-          import sys, re, os, glob
-
-          errors = 0
-          semver_re = re.compile(r'^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$')
-
-          def extract_frontmatter(path):
-              with open(path) as f:
-                  content = f.read()
-              if not content.startswith('---'):
-                  return None, 'missing opening ---'
-              end = content.find('---', 3)
-              if end == -1:
-                  return None, 'missing closing ---'
-              return content[3:end].strip(), None
-
-          # Validate instruction files
-          for f in sorted(glob.glob('.github/instructions/*.instructions.md')):
-              print(f'Checking {f}')
-              fm, err = extract_frontmatter(f)
-              if err:
-                  print(f'  ERROR: {err}')
-                  errors += 1
-                  continue
-
-              try:
-                  import yaml
-                  doc = yaml.safe_load(fm)
-              except yaml.YAMLError as e:
-                  print(f'  ERROR: YAML parse failed: {e}')
-                  errors += 1
-                  continue
-
-              if not isinstance(doc, dict):
-                  print(f'  ERROR: frontmatter must be a YAML mapping, got {type(doc).__name__}')
-                  errors += 1
-                  continue
-
-              # applyTo: required
-              if 'applyTo' not in doc:
-                  print('  ERROR: missing required field applyTo')
-                  errors += 1
-              elif doc['applyTo'] is None:
-                  print('  ERROR: applyTo is null')
-                  errors += 1
-
-              # excludeAgent: must be list
-              if 'excludeAgent' not in doc:
-                  print('  ERROR: missing excludeAgent field')
-                  errors += 1
-              elif not isinstance(doc['excludeAgent'], list):
-                  print(f'  ERROR: excludeAgent must be an array, got {type(doc[\"excludeAgent\"]).__name__}')
-                  errors += 1
-
-              # version: must be semver string
-              if 'version' not in doc:
-                  print('  ERROR: missing version field')
-                  errors += 1
-              elif not isinstance(doc['version'], str) or not semver_re.match(doc['version']):
-                  print(f'  ERROR: version must be semver (e.g. 1.0.0), got: {doc.get(\"version\")}')
-                  errors += 1
-
-              print('  OK')
-
-          # Validate agent files
-          for f in sorted(glob.glob('.github/agents/*.agent.md')):
-              print(f'Checking {f}')
-              fm, err = extract_frontmatter(f)
-              if err:
-                  print(f'  ERROR: {err}')
-                  errors += 1
-                  continue
-
-              try:
-                  import yaml
-                  doc = yaml.safe_load(fm)
-              except yaml.YAMLError as e:
-                  print(f'  ERROR: YAML parse failed: {e}')
-                  errors += 1
-                  continue
-
-              if not isinstance(doc, dict):
-                  print(f'  ERROR: frontmatter must be a YAML mapping')
-                  errors += 1
-                  continue
-
-              for field in ['name', 'description']:
-                  if field not in doc:
-                      print(f'  ERROR: missing required field: {field}')
-                      errors += 1
-
-              # model: must be array (fallback-ready)
-              if 'model' not in doc:
-                  print('  ERROR: missing model field')
-                  errors += 1
-              elif not isinstance(doc['model'], list):
-                  print(f'  ERROR: model must be an array (e.g. [\"gpt-5.2-codex\", \"claude-sonnet-4-6\"]), got {type(doc[\"model\"]).__name__}')
-                  errors += 1
-
-              # tools: must be array
-              if 'tools' not in doc:
-                  print('  ERROR: missing tools field')
-                  errors += 1
-              elif not isinstance(doc['tools'], list):
-                  print(f'  ERROR: tools must be an array, got {type(doc[\"tools\"]).__name__}')
-                  errors += 1
-
-              # version: semver
-              if 'version' not in doc:
-                  print('  ERROR: missing version field')
-                  errors += 1
-              elif not isinstance(doc['version'], str) or not semver_re.match(doc['version']):
-                  print(f'  ERROR: version must be semver, got: {doc.get(\"version\")}')
-                  errors += 1
-
-              print('  OK')
-
-          if errors:
-              print(f'::error::{errors} validation error(s)')
-              sys.exit(1)
-          print('All files validated.')
-          " || exit 1
+        run: python scripts/validate_copilot_config.py
