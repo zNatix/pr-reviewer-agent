@@ -2,6 +2,7 @@
 """
 Validate GitHub Copilot custom instructions and agent frontmatter.
 Enforces documented schema compatibility, size limits, and semantic rules.
+Also validates YAML syntax of workflows, labeler, and issue templates.
 """
 
 import glob
@@ -19,6 +20,7 @@ warnings = 0
 semver_re = re.compile(r"^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$")
 DEPRECATED_MODELS = {"gpt-5.2-codex", "gpt-5.2"}
 ALLOWED_EXCLUDE_AGENTS = {"coding-agent", "code-review", "cloud-agent"}
+FRONTMATTER_RE = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n", re.DOTALL)
 
 
 def extract_frontmatter(path: str):
@@ -26,10 +28,10 @@ def extract_frontmatter(path: str):
         content = f.read()
     if not content.startswith("---"):
         return None, "missing opening ---", content
-    end = content.find("---", 3)
-    if end == -1:
-        return None, "missing closing ---", content
-    return content[3:end].strip(), None, content
+    m = FRONTMATTER_RE.match(content)
+    if not m:
+        return None, "missing closing --- or malformed frontmatter", content
+    return m.group(1).strip(), None, content
 
 
 def check_size(path: str, content: str):
@@ -62,6 +64,17 @@ def check_instruction_references(path: str, content: str, existing: set, strict:
                 warnings += 1
 
 
+def validate_yaml_file(path: str):
+    global errors
+    try:
+        with open(path, encoding="utf-8") as f:
+            yaml.safe_load(f)
+        print(f"  OK (YAML valid)")
+    except yaml.YAMLError as e:
+        print(f"  ERROR: YAML parse failed: {e}")
+        errors += 1
+
+
 existing_instructions = collect_instruction_files()
 
 # Validate instruction files
@@ -85,23 +98,38 @@ for f in sorted(existing_instructions):
         errors += 1
         continue
 
-    # applyTo: required
+    # applyTo: required, must be non-empty string or list of non-empty strings
     if "applyTo" not in doc:
         print("  ERROR: missing required field applyTo")
         errors += 1
     elif doc["applyTo"] is None:
         print("  ERROR: applyTo is null")
         errors += 1
+    elif isinstance(doc["applyTo"], str):
+        if not doc["applyTo"]:
+            print("  ERROR: applyTo must be a non-empty string")
+            errors += 1
+    elif isinstance(doc["applyTo"], list):
+        if not doc["applyTo"]:
+            print("  ERROR: applyTo list is empty")
+            errors += 1
+        else:
+            for idx, item in enumerate(doc["applyTo"]):
+                if not isinstance(item, str) or not item:
+                    print(f"  ERROR: applyTo list item {idx} must be a non-empty string, got {type(item).__name__}")
+                    errors += 1
+    else:
+        print(f"  ERROR: applyTo must be a string or list of strings, got {type(doc['applyTo']).__name__}")
+        errors += 1
 
-    # excludeAgent: scalar string preferred (array accepted for backward compat)
+    # excludeAgent: must be scalar string
     if "excludeAgent" in doc:
         ea = doc["excludeAgent"]
-        if isinstance(ea, list) and len(ea) == 1:
-            print(f"  WARNING: excludeAgent is an array with one item; prefer scalar string: {ea[0]!r}")
-            warnings += 1
-        val = ea[0] if isinstance(ea, list) else ea
-        if val not in ALLOWED_EXCLUDE_AGENTS:
-            print(f"  WARNING: excludeAgent value {val!r} not in known allowlist {ALLOWED_EXCLUDE_AGENTS}")
+        if not isinstance(ea, str) or not ea:
+            print(f"  ERROR: excludeAgent must be a non-empty scalar string, got {type(ea).__name__}")
+            errors += 1
+        elif ea not in ALLOWED_EXCLUDE_AGENTS:
+            print(f"  WARNING: excludeAgent value {ea!r} not in known allowlist {ALLOWED_EXCLUDE_AGENTS}")
             warnings += 1
 
     # version: must be semver string
@@ -229,6 +257,13 @@ for check_path in ["README.md", ".github/copilot-instructions.md"]:
         if link not in linked_paths:
             print(f"  WARNING: {check_path} references missing doc/example: {link}")
             warnings += 1
+
+# Validate GitHub YAML files (workflows, labeler, issue templates)
+print("Checking GitHub YAML files")
+for pattern in [".github/workflows/*.yml", ".github/workflows/*.yaml", ".github/labeler.yml", ".github/ISSUE_TEMPLATE/*.yml"]:
+    for f in sorted(glob.glob(pattern)):
+        print(f"  {f}")
+        validate_yaml_file(f)
 
 strict = "--strict-warnings" in sys.argv
 
