@@ -34,15 +34,19 @@
 
 ## Instruction Files
 
-Domain-specific rule files in `.github/instructions/` apply during code review. Each file uses `excludeAgent: ["coding-agent"]` because these are review rules (flagging anti-patterns, enforcing conventions), not code-generation rules. Remove the `excludeAgent` field if you want the Coding Agent to also follow these rules when generating code.
+Domain-specific rule files in `.github/instructions/` apply during code review. Each file uses `excludeAgent: "coding-agent"` because these are review rules (flagging anti-patterns, enforcing conventions), not code-generation rules. Remove the `excludeAgent` field if you want the Coding Agent to also follow these rules when generating code.
 
 For detailed, domain-specific rules used during code review, see:
 
 | Domain | File |
 |--------|------|
-| Security (OWASP, auth, secrets, input validation) | `.github/instructions/security.instructions.md` |
-| Architecture & SOLID | `.github/instructions/architecture.instructions.md` |
-| Performance, async, EF Core | `.github/instructions/performance.instructions.md` |
+| Security — Injection & Input Validation | `.github/instructions/security-injection.instructions.md` |
+| Security — Auth, Secrets & Deserialization | `.github/instructions/security-auth.instructions.md` |
+| Security — Warnings (crypto, headers, cookies, dependencies) | `.github/instructions/security-warnings.instructions.md` |
+| Architecture — Core (SOLID, DRY, DI, naming, flags) | `.github/instructions/architecture-core.instructions.md` |
+| Architecture — Patterns (nullable, records, IAsyncEnumerable) | `.github/instructions/architecture-patterns.instructions.md` |
+| Performance — Critical (EF Core, async, memory, HTTP) | `.github/instructions/performance-critical.instructions.md` |
+| Performance — Warnings (collections, LINQ, logging, concurrency) | `.github/instructions/performance-warnings.instructions.md` |
 | Gherkin feature files | `.github/instructions/gherkin.instructions.md` |
 | Reqnroll step definitions & hooks | `.github/instructions/reqnroll.instructions.md` |
 | NUnit test standards | `.github/instructions/nunit.instructions.md` |
@@ -50,5 +54,9 @@ For detailed, domain-specific rules used during code review, see:
 | Dependency Injection | `.github/instructions/di.instructions.md` |
 | Entity Framework Core | `.github/instructions/efcore.instructions.md` |
 | Review output format | `.github/instructions/review-output.instructions.md` |
-| Playwright E2E tests | `.github/instructions/playwright.instructions.md` |
-| Appium mobile tests | `.github/instructions/appium.instructions.md` |
+| Playwright — Base & Locators | `.github/instructions/playwright-base.instructions.md` |
+| Playwright — Actions & Network | `.github/instructions/playwright-actions.instructions.md` |
+| Playwright — Anti-patterns | `.github/instructions/playwright-anti-patterns.instructions.md` |
+| Appium — Lifecycle & Capabilities | `.github/instructions/appium-lifecycle.instructions.md` |
+| Appium — Locators & Context | `.github/instructions/appium-locators.instructions.md` |
+| Appium — Gestures & Anti-patterns | `.github/instructions/appium-gestures.instructions.md` |

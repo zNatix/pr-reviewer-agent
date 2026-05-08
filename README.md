@@ -11,7 +11,7 @@
 
 ## What is this?
 
-A production-ready **custom agent** for GitHub Copilot that acts as your automated first-pass code reviewer. Drop it into any C# repository on **Copilot Business or Enterprise** and Copilot will gain a senior reviewer persona with 15 years of .NET experience.
+A **production-oriented template** for GitHub Copilot that acts as your automated first-pass code reviewer. Drop it into any C# repository on **Copilot Business or Enterprise** and Copilot will gain a senior reviewer persona with 15 years of .NET experience.
 
 The agent catches what humans miss — unhandled edge cases, security vulnerabilities, EF Core anti-patterns, missing BDD step definitions — while respecting your team's standards.
 
@@ -42,6 +42,18 @@ This repo supports **two distinct Copilot features**. They work differently — 
 
 > ⚠️ **Important**: The 8-step review process, BDD traceability, and specialized tooling (`search`/`execute`) only work in **@pr-reviewer Chat mode**. Automatic Code Review provides a lighter pass using the same instruction files but without the agent persona.
 
+### Compatibility Matrix
+
+| Client | Repo-wide instructions | Path-specific instructions | Custom agent (`@pr-reviewer`) |
+|---|---|---|---|
+| GitHub.com Code Review | Yes | Yes | Depends on mode support |
+| VS Code Code Review | Yes | Limited in some modes | Depends on IDE support |
+| Visual Studio Code Review | Yes | Limited | Depends on IDE support |
+| JetBrains Code Review | Yes | Yes | Depends on IDE support |
+| Eclipse | Limited | No | No |
+
+> Behavior may vary between clients. Test in your target environment after installation.
+
 ---
 
 ## Quick Start
@@ -56,7 +68,7 @@ git push
 
 Done. Invoke it as `@pr-reviewer` in Copilot Chat on **GitHub.com**, **VS Code**, or **Visual Studio**.
 
-For automatic reviews on every PR, enable **Copilot Code Review** in your repository settings.
+For automatic reviews on every PR, enable **Copilot Code Review** in your repository or organization settings. This is external configuration — not included in this template.
 
 ### See it in action
 Check `examples/sample-pr-diff.patch` (a PR with 16 deliberately injected bugs across security, Playwright, and Appium) and `examples/sample-review-output.md` (the agent's review catching all 16).
@@ -96,22 +108,31 @@ The agent also reviews Playwright and Appium test code:
 
 ```
 .github/
-├── copilot-instructions.md                # Repo-wide standards (all Copilot interactions)
+├── copilot-instructions.md                      # Repo-wide standards (all Copilot interactions)
 ├── agents/
-│   └── pr-reviewer.agent.md               # ✨ The reviewer agent (persona + process)
+│   ├── pr-reviewer.agent.md                     # ✨ The reviewer agent (safe, no execute)
+│   └── pr-reviewer-trusted.agent.md             # Deep reviewer for trusted branches (execute allowed)
 └── instructions/
-    ├── review-output.instructions.md      # Output format, severity tiers, summary template
-    ├── security.instructions.md           # OWASP, auth, secrets, deserialization, SSRF, ReDoS
-    ├── architecture.instructions.md       # SOLID, DRY, DI, project structure, code quality
-    ├── performance.instructions.md        # EF Core, async, memory, HTTP, resilience, rate limiting
-    ├── gherkin.instructions.md            # Feature file syntax, Given-When-Then, tags
-    ├── reqnroll.instructions.md           # Step definitions, hooks, Reqnroll-specific DI
-    ├── nunit.instructions.md              # Test naming, assertions, parallel execution, timeouts
-    ├── logging.instructions.md            # ILogger<T>, structured logging, no PII, source gen
-    ├── di.instructions.md                 # Constructor injection, lifetimes, captive deps, keyed services
-    ├── efcore.instructions.md             # Querying, tracking, batching, migrations, compiled queries
-    ├── playwright.instructions.md         # Locators, assertions, base classes, lifecycle, anti-patterns
-    └── appium.instructions.md             # Drivers, capabilities, waits, gestures, mobile lifecycle
+    ├── review-output.instructions.md            # Output format, severity tiers, summary template
+    ├── security-injection.instructions.md       # SQL injection, XSS, input validation, path traversal, ReDoS
+    ├── security-auth.instructions.md            # Auth, secrets, deserialization, SSRF, open redirect
+    ├── security-warnings.instructions.md        # Crypto, headers, cookies, dependencies
+    ├── architecture-core.instructions.md        # SOLID, DRY, DI, project structure, code quality
+    ├── architecture-patterns.instructions.md    # Nullable, records, IAsyncEnumerable
+    ├── performance-critical.instructions.md     # EF Core, async, memory, HTTP
+    ├── performance-warnings.instructions.md     # Collections, LINQ, logging, concurrency, resilience
+    ├── gherkin.instructions.md                  # Feature file syntax, Given-When-Then, tags
+    ├── reqnroll.instructions.md                 # Step definitions, hooks, Reqnroll-specific DI
+    ├── nunit.instructions.md                    # Test naming, assertions, parallel execution, timeouts
+    ├── logging.instructions.md                  # ILogger<T>, structured logging, no PII, source gen
+    ├── di.instructions.md                       # Constructor injection, lifetimes, captive deps, keyed services
+    ├── efcore.instructions.md                   # Querying, tracking, batching, migrations, compiled queries
+    ├── playwright-base.instructions.md          # Base classes, locators, assertions
+    ├── playwright-actions.instructions.md       # Actions, network mocking, file upload, screenshots
+    ├── playwright-anti-patterns.instructions.md # Anti-patterns and common mistakes
+    ├── appium-lifecycle.instructions.md         # Drivers, capabilities, lifecycle
+    ├── appium-locators.instructions.md          # Waits, locators, context switching
+    └── appium-gestures.instructions.md          # Gestures, device interaction, anti-patterns
 ```
 
 ### How the files work together
@@ -165,7 +186,7 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 | Limitation | Impact | Mitigation |
 |---|---|---|
 | **BDD traceability is grep-based, not AST-resolved** | May miss step definition matches when `[Scope]` attribute is used or Cucumber expressions are complex | Run `dotnet test --list-tests` as supplementary check (the agent will try this if Reqnroll project detected) |
-| **12 instruction files may exceed Copilot Code Review's 4KB-per-file context limit** | In automatic mode, rules from the largest files (appium 172 lines, playwright 135 lines) may be partially truncated | Keep instruction files focused; test on your largest file first |
+| **Instruction files split to stay under Copilot Code Review's 4KB-per-file context limit** | Files are now split so each stays below the limit. Verify with `scripts/validate_copilot_config.py` | Keep new files under 3,800 characters |
 | **`excludeAgent: "coding-agent"` behavior not empirically smoke-tested** | Documented in [official changelog](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/) but not verified by us on a live Coding Agent. May silently fall back | Test in your repo: ask Coding Agent to generate code violating a rule and see if it's caught |
 | **Not tested on PRs >100 files** | Token budget caps at 25 files — the rest are listed as skipped. On massive PRs, important changes may be in the skipped portion | Split large PRs; the agent will list skipped files explicitly |
 | **Severity tiers are guidance, not enforcement** | LLM non-determinism: the agent may classify the same bug as 🟡 Warning on one run and 🔴 Critical on another | Use as first-pass triage, not final gate. Human reviewer always has final say |
@@ -185,12 +206,18 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 - [x] Stack adaptation guide (xUnit, MSTest, SpecFlow, Dapper, Selenium, Minimal APIs)
 
 ### v1.0.1 (next patch)
+- [x] Fix `model` frontmatter to string (was array)
+- [x] Remove `execute` from default agent; create `pr-reviewer-trusted` agent
+- [x] Split instruction files to stay under 4KB Copilot Code Review limit
+- [x] Fix `excludeAgent` to scalar string
+- [x] Add compatibility matrix to README
+- [x] Add CI validation script with PyYAML pinning and size checks
 - [ ] `api-design.instructions.md` (versioning, ProblemDetails, pagination, ETag)
 - [ ] Supply chain security rules (lockfile verification, typosquatting, signed packages)
 - [ ] Token budget refinement: byte-cap for PRs >100 changed files
 
 ### v1.1
-- [ ] GitHub Actions workflow for automated PR review on every PR
+- [ ] GitHub Actions workflow for automated PR review on every PR (requires Copilot Code Review enabled externally)
 - [ ] Auto-labeling suggestions (`size/L`, `breaking-change`, `needs-migration`)
 - [ ] xUnit and MSTest instruction files
 - [ ] `examples/` folder with bad-PR/good-PR for customization onboarding
