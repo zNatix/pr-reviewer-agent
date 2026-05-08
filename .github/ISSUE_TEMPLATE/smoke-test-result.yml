@@ -1,0 +1,56 @@
+name: Smoke Test Result
+description: Report results from a smoke test run of the PR reviewer agent
+labels: [smoke-test]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: Short summary of the smoke test
+      placeholder: e.g., "Smoke test for v1.2.3 - GitHub.com integration"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: client
+    attributes:
+      label: Client
+      description: Which client or platform was tested?
+      options:
+        - GitHub.com
+        - VS Code
+        - Visual Studio
+        - JetBrains
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: test-id
+    attributes:
+      label: Test ID
+      description: Unique identifier for this smoke test
+      placeholder: e.g., "ST-2024-001"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      description: Overall result of the smoke test
+      options:
+        - Pass
+        - Fail
+        - Partial
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Any additional observations, issues, or context
+      placeholder: Describe what worked, what failed, screenshots, logs, etc.
+    validations:
+      required: false

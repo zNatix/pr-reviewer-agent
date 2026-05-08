@@ -1,0 +1,84 @@
+name: False Positive Report
+description: Report a false positive from the PR reviewer agent
+labels: [false-positive]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: Short summary of the false positive
+      placeholder: e.g., "Incorrect flag on async void test method"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Detailed description of what was incorrectly flagged
+      placeholder: Provide context about the finding and why it is incorrect...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: instruction-file
+    attributes:
+      label: Instruction File
+      description: Which instruction file generated the false positive?
+      options:
+        - supply-chain.instructions.md
+        - github-actions.instructions.md
+        - api-design.instructions.md
+        - security-warnings.instructions.md
+        - security-injection.instructions.md
+        - security-auth.instructions.md
+        - review-output.instructions.md
+        - reqnroll.instructions.md
+        - playwright-base.instructions.md
+        - playwright-anti-patterns.instructions.md
+        - playwright-actions.instructions.md
+        - performance-warnings.instructions.md
+        - performance-critical.instructions.md
+        - nunit.instructions.md
+        - logging.instructions.md
+        - gherkin.instructions.md
+        - efcore.instructions.md
+        - di.instructions.md
+        - architecture-patterns.instructions.md
+        - architecture-core.instructions.md
+        - appium-locators.instructions.md
+        - appium-lifecycle.instructions.md
+        - appium-gestures.instructions.md
+        - Other / Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: What severity was incorrectly assigned?
+      options:
+        - Critical
+        - Warning
+        - Suggestion
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-code
+    attributes:
+      label: Example Code
+      description: The code snippet that was incorrectly flagged
+      render: csharp
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened instead?
+      placeholder: e.g., "This pattern is safe because..."
+    validations:
+      required: true

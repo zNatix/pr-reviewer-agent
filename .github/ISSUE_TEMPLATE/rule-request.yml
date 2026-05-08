@@ -1,0 +1,69 @@
+name: Rule Request
+description: Request a new rule or instruction file for the PR reviewer agent
+labels: [rule-request]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: Short summary of the requested rule
+      placeholder: e.g., "Add rule for minimal API route handlers"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What the rule should check and why it is valuable
+      placeholder: Describe the new rule and its purpose...
+    validations:
+      required: true
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      description: What domain or area does this rule cover?
+      placeholder: e.g., "ASP.NET Core Minimal APIs", "Entity Framework", "xUnit"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: proposed-severity
+    attributes:
+      label: Proposed Severity
+      description: What severity level should this rule have?
+      options:
+        - Critical
+        - Warning
+        - Suggestion
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-bad-code
+    attributes:
+      label: Example Bad Code
+      description: Code that should trigger the new rule
+      render: csharp
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-good-code
+    attributes:
+      label: Example Good Code
+      description: Refactored or correct version of the code
+      render: csharp
+    validations:
+      required: true
+
+  - type: input
+    id: stack-framework
+    attributes:
+      label: Stack / Framework
+      description: What stack or framework is this rule for?
+      placeholder: e.g., ".NET 8", "Playwright", "NUnit"
+    validations:
+      required: false
