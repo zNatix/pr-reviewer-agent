@@ -184,14 +184,51 @@ for f in sorted(glob.glob(".github/agents/*.agent.md")):
 
     print("  OK")
 
-# Validate README for stale references
+# Validate copilot-instructions.md
+copilot_path = ".github/copilot-instructions.md"
+if os.path.exists(copilot_path):
+    print(f"Checking {copilot_path}")
+    with open(copilot_path, encoding="utf-8") as f:
+        copilot_content = f.read()
+    check_instruction_references(copilot_path, copilot_content, existing_instructions, strict=True)
+    errors += check_size(copilot_path, copilot_content)
+    print("  OK")
+
+# Validate README for stale references and roadmap accuracy
 readme_path = "README.md"
 if os.path.exists(readme_path):
     print(f"Checking {readme_path}")
     with open(readme_path, encoding="utf-8") as f:
         readme_content = f.read()
     check_instruction_references(readme_path, readme_content, existing_instructions, strict=False)
+    for line in readme_content.splitlines():
+        if line.strip().startswith("- [ ]"):
+            for ref in re.findall(r"[\w\-]+\.instructions\.md", line):
+                full = os.path.join(".github/instructions", ref)
+                if full in existing_instructions:
+                    print(f"  WARNING: README roadmap lists unchecked item for existing file: {ref}")
+                    warnings += 1
     print("  OK")
+
+# Validate docs and examples links
+linked_paths = set()
+for root, dirs, files in os.walk("docs"):
+    for name in files:
+        linked_paths.add(os.path.join(root, name).replace("\\", "/"))
+for root, dirs, files in os.walk("examples"):
+    for name in files:
+        linked_paths.add(os.path.join(root, name).replace("\\", "/"))
+
+for check_path in ["README.md", ".github/copilot-instructions.md"]:
+    if not os.path.exists(check_path):
+        continue
+    with open(check_path, encoding="utf-8") as f:
+        content = f.read()
+    found_links = re.findall(r"(?:docs|examples)/[\w\-\./]+\.(?:md|patch|yml|yaml)", content)
+    for link in set(found_links):
+        if link not in linked_paths:
+            print(f"  WARNING: {check_path} references missing doc/example: {link}")
+            warnings += 1
 
 if errors:
     print(f"::error::{errors} validation error(s)")
