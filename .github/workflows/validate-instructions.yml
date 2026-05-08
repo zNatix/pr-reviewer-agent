@@ -9,6 +9,8 @@ on:
       - '.github/workflows/*.yml'
       - 'README.md'
       - 'examples/**'
+      - 'scripts/validate_copilot_config.py'
+      - 'docs/**'
   push:
     paths:
       - '.github/copilot-instructions.md'
@@ -17,6 +19,8 @@ on:
       - '.github/workflows/*.yml'
       - 'README.md'
       - 'examples/**'
+      - 'scripts/validate_copilot_config.py'
+      - 'docs/**'
 
 permissions:
   contents: read
