@@ -49,5 +49,7 @@ Starting June 1, 2026, GitHub Copilot Code Review consumes GitHub Actions minute
 When reviewing, the agent must:
 - State the number of files reviewed vs. total changed files
 - List skipped files by name (or pattern if >20)
+- Build a Diff Map so that every changed hunk is accounted for as `reviewed` or `skipped` with reason
+- For files beyond the 25-file cap, still list them in the Diff Map under `Files skipped`
 - If findings exceed 30 items, summarize by severity and detail only the top 10
 - For PRs >100 files, add a note: "Consider splitting this PR for a more thorough review."

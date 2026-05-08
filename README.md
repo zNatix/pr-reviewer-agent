@@ -19,7 +19,8 @@ The agent catches what humans miss — unhandled edge cases, security vulnerabil
 
 | Feature | Description |
 |---|---|
-| **23 split instruction files across 15 review domains** | Security, architecture, performance, logging, DI, NUnit, Gherkin, Reqnroll, Playwright, Appium, API design, GitHub Actions, supply chain |
+| **24 split instruction files across 16 review domains** | Security, architecture, performance, logging, DI, NUnit, Gherkin, Reqnroll, Playwright, Appium, API design, GitHub Actions, supply chain, diff coverage |
+| **Diff Coverage contract** | Structured Diff Map with causal Review Chapters and mandatory hunk coverage before findings |
 | **Token budget controls** | 25-file cap, skip auto-generated code, Dependabot fast-path, 30-finding max |
 | **Prompt injection defense** | Rejects malicious instructions embedded in code comments, READMEs, or PR descriptions |
 | **Dual-mode support** | Works as both automatic Code Review (lightweight, every PR) and `@pr-reviewer` Chat agent (deep 8-step review) |
@@ -73,6 +74,7 @@ For automatic reviews on every PR, enable **Copilot Code Review** in your reposi
 ### See it in action
 - `examples/archive/sample-pr-diff.patch` — a PR with 16 deliberately injected bugs
 - `examples/archive/sample-review-output.md` — the agent's review catching all 16
+- `examples/archive/sample-diff-coverage-output.md` — Diff Coverage + Review Chapters + Human Judgment Questions example
 - `examples/{domain}/bad-*.md` and `examples/{domain}/good-*.md` — bad vs good code pairs by domain
 
 ---
@@ -115,7 +117,8 @@ The agent also reviews Playwright and Appium test code:
 │   ├── pr-reviewer.agent.md                     # ✨ The reviewer agent (safe, no execute)
 │   └── pr-reviewer-trusted.agent.md             # Deep reviewer for trusted branches (execute allowed)
 └── instructions/
-    ├── review-output.instructions.md            # Output format, severity tiers, summary template
+    ├── review-output.instructions.md            # Output format, severity tiers, summary template, Diff Coverage
+    ├── diff-review.instructions.md              # Diff Map, causal Review Chapters, hunk coverage, human judgment questions
     ├── security-injection.instructions.md       # SQL injection, XSS, input validation, path traversal, ReDoS
     ├── security-auth.instructions.md            # Auth, secrets, deserialization, SSRF, open redirect
     ├── security-warnings.instructions.md        # Crypto, headers, cookies, dependencies
@@ -226,6 +229,7 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 - [x] Add `api-design.instructions.md`
 - [x] Add `github-actions.instructions.md` and `supply-chain.instructions.md`
 - [x] Add review budget policy for large PRs and cost-aware review
+- [x] Add `diff-review.instructions.md` with Diff Map, Review Chapters, and Human Judgment Questions
 > Smoke tests are documented in `docs/smoke-tests.md`; empirical execution across clients is pending.
 
 ### v1.1 🚧 (pending empirical validation)

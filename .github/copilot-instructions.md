@@ -46,6 +46,7 @@ Domain-specific rule files in `.github/instructions/` apply during code review. 
 | Logging | `.github/instructions/logging.instructions.md` |
 | DI | `.github/instructions/di.instructions.md` |
 | EF Core | `.github/instructions/efcore.instructions.md` |
+| Diff Review | `.github/instructions/diff-review.instructions.md` |
 | Output format | `.github/instructions/review-output.instructions.md` |
 | Playwright — Base | `.github/instructions/playwright-base.instructions.md` |
 | Playwright — Actions | `.github/instructions/playwright-actions.instructions.md` |
