@@ -212,6 +212,29 @@ for f in sorted(glob.glob(".github/agents/*.agent.md")):
 
     print("  OK")
 
+# Validate review-output contains Diff Coverage
+review_output_path = ".github/instructions/review-output.instructions.md"
+if os.path.exists(review_output_path):
+    print(f"Checking {review_output_path} for Diff Coverage")
+    with open(review_output_path, encoding="utf-8") as f:
+        review_output_content = f.read()
+    if "## Diff Coverage" not in review_output_content:
+        print("  ERROR: review-output.instructions.md missing ## Diff Coverage block")
+        errors += 1
+    else:
+        print("  OK")
+
+# Validate agents reference diff-review
+for f in sorted(glob.glob(".github/agents/*.agent.md")):
+    print(f"Checking {f} references diff-review")
+    with open(f, encoding="utf-8") as fh:
+        agent_content = fh.read()
+    if "diff-review.instructions.md" not in agent_content:
+        print("  ERROR: agent does not reference diff-review.instructions.md")
+        errors += 1
+    else:
+        print("  OK")
+
 # Validate copilot-instructions.md
 copilot_path = ".github/copilot-instructions.md"
 if os.path.exists(copilot_path):
@@ -220,6 +243,9 @@ if os.path.exists(copilot_path):
         copilot_content = f.read()
     check_instruction_references(copilot_path, copilot_content, existing_instructions, strict=True)
     errors += check_size(copilot_path, copilot_content)
+    if "diff-review.instructions.md" not in copilot_content:
+        print("  ERROR: copilot-instructions.md does not reference diff-review.instructions.md")
+        errors += 1
     print("  OK")
 
 # Validate README for stale references and roadmap accuracy
@@ -229,6 +255,9 @@ if os.path.exists(readme_path):
     with open(readme_path, encoding="utf-8") as f:
         readme_content = f.read()
     check_instruction_references(readme_path, readme_content, existing_instructions, strict=False)
+    if "diff-review.instructions.md" not in readme_content:
+        print("  WARNING: README does not reference diff-review.instructions.md")
+        warnings += 1
     for line in readme_content.splitlines():
         if line.strip().startswith("- [ ]"):
             for ref in re.findall(r"[\w\-]+\.instructions\.md", line):
