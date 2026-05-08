@@ -228,12 +228,12 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 - [x] Add review budget policy for large PRs and cost-aware review
 > Smoke tests are documented in `docs/smoke-tests.md`; empirical execution across clients is pending.
 
-### v1.1 ✅
-- [x] Run smoke tests across GitHub.com, VS Code, Visual Studio, JetBrains and record results
+### v1.1 🚧 (pending empirical validation)
+- [ ] Run smoke tests across GitHub.com, VS Code, Visual Studio, JetBrains and record results
 - [x] Document automatic Copilot Code Review setup via GitHub rulesets/settings
 - [x] Optional workflow for PR labeling and instruction validation
 - [x] xUnit and MSTest instruction files
-- [x] Expand `examples/` into bad-PR/good-PR pairs by domain
+- [ ] Expand `examples/` into bad-PR/good-PR pairs by domain (partial — selected domains only)
 - [x] Issue templates for false positives, missed findings and rule requests
 
 ### v2.0-template

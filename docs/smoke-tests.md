@@ -37,6 +37,6 @@
 
 1. Fork this repository into a private test repo.
 2. Copy `.github/` to the test repo.
-3. Open a test PR with deliberate issues (see `examples/sample-pr-diff.patch`).
+3. Open a test PR with deliberate issues (see `examples/archive/sample-pr-diff.patch`).
 4. Trigger Copilot Code Review or `@pr-reviewer` in your preferred client.
 5. Record results in the **Results Log** above and open a PR to update this file.

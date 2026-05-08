@@ -5,7 +5,7 @@ Thanks for helping improve the PR reviewer agent.
 ## How to propose a new instruction file
 
 1. Create `instructions/your-domain.instructions.md` in `.github/instructions/`
-2. Include YAML frontmatter with `applyTo` (glob patterns), `version` (semver), and `excludeAgent` (array)
+2. Include YAML frontmatter with `applyTo` (glob patterns), `version` (semver), and `excludeAgent` (scalar string)
 3. Follow the existing severity structure: `## 🔴 Critical` → `## 🟡 Warning` → `## 🔵 Suggestion`
 4. Add a row to the instruction file table in `README.md` and `copilot-instructions.md`
 5. Add a row to the agent's instruction table in `pr-reviewer.agent.md`
