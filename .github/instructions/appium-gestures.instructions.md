@@ -20,11 +20,8 @@ excludeAgent: "coding-agent"
 - Pinch/zoom: multi-touch W3C Actions
 
 ## Device Interaction
-- `driver.LockDevice()` / `driver.UnlockDevice()` — test lock screen scenarios
-- `driver.Rotate(ScreenOrientation.Landscape)` — orientation testing
-- `driver.PressKeyCode(AndroidKeyCode.Home)` — Android key events
-- `driver.ExecuteScript("mobile: terminateApp", ...)` — force-close app
-- `driver.ExecuteScript("mobile: activateApp", ...)` — bring app to foreground
+- `driver.Lock/UnlockDevice()`, `Rotate()`, `PressKeyCode()`
+- `ExecuteScript("mobile: terminateApp")` / `activateApp` for lifecycle tests
 
 ## Screenshots & Logging
 - `driver.GetScreenshot().SaveAsFile("screenshot.png")` — capture on failure

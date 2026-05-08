@@ -230,9 +230,13 @@ for check_path in ["README.md", ".github/copilot-instructions.md"]:
             print(f"  WARNING: {check_path} references missing doc/example: {link}")
             warnings += 1
 
+strict = "--strict-warnings" in sys.argv
+
 if errors:
     print(f"::error::{errors} validation error(s)")
     sys.exit(1)
 if warnings:
     print(f"::warning::{warnings} validation warning(s)")
+    if strict:
+        sys.exit(1)
 print("All files validated.")

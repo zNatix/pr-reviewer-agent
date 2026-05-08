@@ -60,16 +60,4 @@ excludeAgent: "coding-agent"
 - ❌ `Thread.Sleep(2000)` before assertion — Playwright auto-waits
 
 ### Common assertions
-| Assertion | Purpose |
-|---|---|
-| `ToBeVisibleAsync()` | Element is visible and in DOM |
-| `ToBeHiddenAsync()` | Element is hidden or removed |
-| `ToBeEnabledAsync()` / `ToBeDisabledAsync()` | Interactive state |
-| `ToBeCheckedAsync()` | Checkbox/radio state |
-| `ToHaveTextAsync("text")` | Exact text match |
-| `ToContainTextAsync("text")` | Text contains substring |
-| `ToHaveValueAsync("val")` | Input value |
-| `ToHaveAttributeAsync("href", "/login")` | Attribute value |
-| `ToHaveCountAsync(3)` | Number of matching elements |
-| `ToHaveURLAsync("**/dashboard")` | URL pattern match |
-| `ToHaveTitleAsync("Title")` | Page title |
+Use `Expect(locator).ToBeVisibleAsync()`, `ToBeHiddenAsync()`, `ToBeEnabledAsync()`, `ToBeDisabledAsync()`, `ToBeCheckedAsync()`, `ToHaveTextAsync()`, `ToContainTextAsync()`, `ToHaveValueAsync()`, `ToHaveAttributeAsync()`, `ToHaveCountAsync()`, `ToHaveURLAsync()`, `ToHaveTitleAsync()`.
