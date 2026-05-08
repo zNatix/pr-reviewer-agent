@@ -1,0 +1,24 @@
+# .github/workflows/pr-labeler.yml
+# OPTIONAL (opt-in): Automatically labels pull requests based on changed file paths.
+# Requires a .github/labeler.yml configuration file to map labels to globs.
+# Delete this file if you do not want automatic PR labeling.
+# No secrets are used; only the built-in GITHUB_TOKEN is required.
+
+name: PR Labeler
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply labels from changed files
+        uses: actions/labeler@v5
+        with:
+          repo-token: ${{ github.token }}
