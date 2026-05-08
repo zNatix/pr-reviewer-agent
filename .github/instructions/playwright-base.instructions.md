@@ -1,10 +1,10 @@
 ---
 applyTo: ["**/*Playwright*.cs", "**/*PlaywrightTest*.cs", "**/E2E/**/*.cs", "**/Playwright*/**/*.cs"]
 version: "1.0.0"
-excludeAgent: ["coding-agent"]
+excludeAgent: "coding-agent"
 ---
 
-# Playwright for .NET — Test Automation Standards
+# Playwright for .NET — Base Classes & Locators
 
 > Official docs: https://playwright.dev/dotnet/docs/intro
 > Best practices: https://playwright.dev/docs/best-practices
@@ -73,64 +73,3 @@ excludeAgent: ["coding-agent"]
 | `ToHaveCountAsync(3)` | Number of matching elements |
 | `ToHaveURLAsync("**/dashboard")` | URL pattern match |
 | `ToHaveTitleAsync("Title")` | Page title |
-
-## Actions
-
-### Auto-waiting is built in — don't add manual waits
-- Playwright waits for element to be [actionable](https://playwright.dev/dotnet/docs/actionability) before clicking, filling, etc.
-- ❌ `await Page.WaitForSelectorAsync("#element"); await Page.ClickAsync("#element")` — redundant
-- ❌ `await Task.Delay(500)` — flaky, unnecessary
-
-### Navigation
-- `await Page.GotoAsync(url)` — auto-waits for load state
-- Use `Page.GotoAsync(url, new() { WaitUntil = WaitUntilState.NetworkIdle })` for SPAs
-
-### Form interactions
-- `await Page.GetByLabel("Email").FillAsync("user@test.com")` — clears + types
-- `await Page.GetByLabel("Country").SelectOptionAsync(new[] { "Spain" })` — dropdowns
-- `await Page.GetByLabel("I agree").CheckAsync()` / `UncheckAsync()` — checkboxes
-
-## Network & Mocking
-
-### API mocking (preferred over hitting real APIs in E2E tests)
-- `await Page.RouteAsync("**/api/**", async route => { await route.FulfillAsync(new() { Body = json }); })`
-- Mock external dependencies — don't test third-party services
-- Use `Page.UnrouteAllAsync()` in `[TearDown]` to clean up routes
-
-### Wait for API responses
-- `var response = await Page.WaitForResponseAsync("**/api/orders")` — better than `Task.Delay` after action
-
-## File Upload & Download
-- Upload: `await Page.GetByLabel("Upload file").SetInputFilesAsync("file.pdf")`
-- Download: `var download = await Page.RunAndWaitForDownloadAsync(() => Page.GetByText("Download").ClickAsync());`
-- Never mock file dialogs with `Dialog` handler — use `SetInputFilesAsync`
-
-## Screenshots, Videos & Traces
-- `await Page.ScreenshotAsync(new() { Path = "screenshot.png" })`
-- Enable trace: override `ContextOptions()` with `new BrowserNewContextOptions { RecordVideoDir = "videos/" }`
-- Use `Page.Video?.SaveAsync("video.webm")` in tear down when recording
-
-## 🚫 Anti-patterns to Flag Immediately
-
-### 🔴 Critical — Block Merge
-- `new Playwright()` or manual lifecycle management of `IBrowser`/`IBrowserContext` — use base classes
-- `.Result` or `.Wait()` on async Playwright methods — always `await`
-- `Thread.Sleep()` or `Task.Delay()` as synchronization mechanism — use assertions with auto-wait
-- Hardcoded URLs in tests (use `ContextOptions().BaseURL` or configuration)
-- Missing `[TearDown]` / `TestCleanup` that disposes resources
-
-### 🟡 Warning
-- XPath locators or CSS locators when role/text/label locators are available
-- `Page.WaitForSelectorAsync()` before `ClickAsync()` — redundant
-- Tests that depend on execution order (not isolated)
-- Multiple `Page.GotoAsync()` in the same test to different domains (use separate tests)
-- Tests without assertions (navigation-only)
-- `Page.ScreenshotAsync()` calls without `try-catch` (can hide assertion failures)
-- Not using `BrowserNewContextOptions` to set consistent viewport/timezone/locale
-
-### 🔵 Suggestion
-- Missing `data-testid` attributes when CSS selectors are used repeatedly
-- Tests longer than 30 lines without helper methods
-- Duplicate locator chains across tests (extract to Page Object or helper)
-- Not using `filter()` when `.Nth()` would be clearer
-- Overriding `ContextOptions()` without calling `base.ContextOptions()` for defaults
