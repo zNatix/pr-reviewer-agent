@@ -19,7 +19,7 @@ The agent catches what humans miss — unhandled edge cases, security vulnerabil
 
 | Feature | Description |
 |---|---|
-| **12 domain-specific rule files** | Security (OWASP + deserialization/SSRF/ReDoS), architecture (SOLID/nullability), performance (EF Core/async/resilience), logging, DI, NUnit, Gherkin, Reqnroll, Playwright, Appium |
+| **23 split instruction files across 15 review domains** | Security, architecture, performance, logging, DI, NUnit, Gherkin, Reqnroll, Playwright, Appium, API design, GitHub Actions, supply chain |
 | **Token budget controls** | 25-file cap, skip auto-generated code, Dependabot fast-path, 30-finding max |
 | **Prompt injection defense** | Rejects malicious instructions embedded in code comments, READMEs, or PR descriptions |
 | **Dual-mode support** | Works as both automatic Code Review (lightweight, every PR) and `@pr-reviewer` Chat agent (deep 8-step review) |
@@ -132,7 +132,10 @@ The agent also reviews Playwright and Appium test code:
     ├── playwright-anti-patterns.instructions.md # Anti-patterns and common mistakes
     ├── appium-lifecycle.instructions.md         # Drivers, capabilities, lifecycle
     ├── appium-locators.instructions.md          # Waits, locators, context switching
-    └── appium-gestures.instructions.md          # Gestures, device interaction, anti-patterns
+    ├── appium-gestures.instructions.md          # Gestures, device interaction, anti-patterns
+    ├── api-design.instructions.md               # HTTP semantics, pagination, idempotency, DTOs
+    ├── github-actions.instructions.md           # Workflow security, permissions, SHA pinning
+    └── supply-chain.instructions.md             # NuGet, Docker, deterministic builds, typosquatting
 ```
 
 ### How the files work together
@@ -212,15 +215,17 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 - [x] Fix `excludeAgent` to scalar string
 - [x] Add compatibility matrix to README
 - [x] Add CI validation script with PyYAML pinning and size checks
-- [ ] Migrate custom agents from `gpt-5.2-codex` to omitted model
-- [ ] Remove stale references to old consolidated instruction files
-- [ ] Document smoke tests for `excludeAgent`, custom agents and path-specific review
-- [ ] Add semantic validation for stale file references and deprecated models
-- [ ] Add `api-design.instructions.md`
-- [ ] Add `github-actions.instructions.md` and `supply-chain.instructions.md`
-- [ ] Add review budget policy for large PRs and cost-aware review
+- [x] Migrate custom agents from `gpt-5.2-codex` to omitted model
+- [x] Remove stale references to old consolidated instruction files
+- [x] Document smoke tests for `excludeAgent`, custom agents and path-specific review
+- [x] Add semantic validation for stale file references and deprecated models
+- [x] Add `api-design.instructions.md`
+- [x] Add `github-actions.instructions.md` and `supply-chain.instructions.md`
+- [x] Add review budget policy for large PRs and cost-aware review
+> Smoke tests are documented in `docs/smoke-tests.md`; empirical execution across clients is pending.
 
 ### v1.1
+- [ ] Run smoke tests across GitHub.com, VS Code, Visual Studio, JetBrains and record results
 - [ ] Document automatic Copilot Code Review setup via GitHub rulesets/settings
 - [ ] Optional workflow for PR labeling and instruction validation
 - [ ] xUnit and MSTest instruction files
