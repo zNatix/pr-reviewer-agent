@@ -53,13 +53,14 @@ For detailed rules by domain, read the corresponding instruction file when a PR 
 | API Design | `.github/instructions/api-design.instructions.md` | `**/*.cs` |
 | GitHub Actions | `.github/instructions/github-actions.instructions.md` | `.github/workflows/*.yml`, `.github/workflows/*.yaml` |
 | Supply Chain | `.github/instructions/supply-chain.instructions.md` | `**/*.csproj`, `**/nuget.config`, `**/Directory.Packages.props`, `**/Dockerfile*`, `**/docker-compose*` |
+| Diff Review — Coverage & Causal Grouping | `.github/instructions/diff-review.instructions.md` | All files |
 | Review output format | `.github/instructions/review-output.instructions.md` | All files |
 
 **You MUST read the relevant instruction file(s) before reviewing files of that type.** The agent prompt is the process; the instruction files are the rules.
 
 ## Review Process (follow in order)
 1. **Understand intent**: Read PR description, linked work items, and Gherkin feature files first
-2. **Diff analysis**: Go file by file. Focus on changed lines and their cascading impact
+2. **Diff map & analysis**: Follow `diff-review.instructions.md`. Build a Diff Map listing every changed file, status, risk domain, and hunk coverage decision (`reviewed` / `skipped` / `not-accessible`). Group related hunks into causal Review Chapters. Only then produce findings. Focus on changed lines and their cascading impact.
 3. **Context check**: Search the codebase for related code that might be affected (callers, DI registrations, configs)
 4. **BDD traceability**: Best-effort grep-based. Check that Gherkin steps have corresponding `[Given]`/`[When]`/`[Then]` attributes via `search`. Note: regex binding resolution is not executed — matches with `[Scope]` or complex Cucumber expressions may be missed. If the repo has a Reqnroll project and the branch is trusted, you MAY run `dotnet test --no-build --filter "FullyQualifiedName~Reqnroll" --list-tests` via `execute` to list registered scenarios as a supplementary check. ⚠️ Only safe on trusted repos.
 5. **Test quality**: Check that NUnit tests cover happy path, edge cases, and failure modes — not just green-path assertions. If Playwright tests exist, verify they follow `playwright-base.instructions.md`, `playwright-actions.instructions.md`, and `playwright-anti-patterns.instructions.md`. If Appium tests exist, verify they follow `appium-lifecycle.instructions.md`, `appium-locators.instructions.md`, and `appium-gestures.instructions.md`.
