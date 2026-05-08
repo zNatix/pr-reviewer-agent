@@ -151,7 +151,7 @@ The agent also reviews Playwright and Appium test code:
 
 1. **Edit `pr-reviewer.agent.md`**: update the model if needed (see [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models))
 2. **Adjust `copilot-instructions.md`**: replace `Company.Project.Layer` naming with your conventions
-3. **Review `security.instructions.md`**: add your specific compliance requirements
+3. **Review security instruction files**: add your specific compliance requirements to `security-injection.instructions.md`, `security-auth.instructions.md`, and `security-warnings.instructions.md`
 4. **Test**: open a test PR and invoke `@pr-reviewer` in Copilot Chat
 
 ### Stack variations
@@ -164,8 +164,8 @@ The agent also reviews Playwright and Appium test code:
 | **Dapper (not EF Core)** | Keep `efcore.instructions.md` for reference but add `dapper.instructions.md` |
 | **Minimal APIs** | Add `api-design.instructions.md` with endpoint conventions |
 | **No BDD** | Remove `gherkin.instructions.md` and `reqnroll.instructions.md` |
-| **Selenium (not Playwright)** | Replace `playwright.instructions.md`; add Selenium-specific rules |
-| **No mobile testing** | Remove `appium.instructions.md` |
+| **Selenium (not Playwright)** | Replace Playwright instruction files; add Selenium-specific rules |
+| **No mobile testing** | Remove Appium instruction files |
 
 ---
 
@@ -187,7 +187,7 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 |---|---|---|
 | **BDD traceability is grep-based, not AST-resolved** | May miss step definition matches when `[Scope]` attribute is used or Cucumber expressions are complex | Run `dotnet test --list-tests` as supplementary check (the agent will try this if Reqnroll project detected) |
 | **Instruction files split to stay under Copilot Code Review's 4KB-per-file context limit** | Files are now split so each stays below the limit. Verify with `scripts/validate_copilot_config.py` | Keep new files under 3,800 characters |
-| **`excludeAgent: "coding-agent"` behavior not empirically smoke-tested** | Documented in [official changelog](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/) but not verified by us on a live Coding Agent. May silently fall back | Test in your repo: ask Coding Agent to generate code violating a rule and see if it's caught |
+| **`excludeAgent: "coding-agent"` behavior partially smoke-tested** | Documented in [official changelog](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/). See [`docs/smoke-tests.md`](docs/smoke-tests.md) for the test matrix and results. May vary by client. | Run the tests in your target environment and report results |
 | **Not tested on PRs >100 files** | Token budget caps at 25 files — the rest are listed as skipped. On massive PRs, important changes may be in the skipped portion | Split large PRs; the agent will list skipped files explicitly |
 | **Severity tiers are guidance, not enforcement** | LLM non-determinism: the agent may classify the same bug as 🟡 Warning on one run and 🔴 Critical on another | Use as first-pass triage, not final gate. Human reviewer always has final say |
 | **No CI status checking** | The agent cannot verify if CI is green — it will remind you to check manually | Enable branch protection rules with required checks in GitHub |
@@ -198,11 +198,11 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 ## Roadmap
 
 ### v1.0 ✅ (current)
-- [x] 12 domain-specific instruction files (security, architecture, performance, logging, DI, EF Core, NUnit, Gherkin, Reqnroll, Playwright, Appium, review-output)
+- [x] 12 review domains implemented as split `.instructions.md` files
 - [x] Token budget with scoping, Dependabot fast-path, skip patterns
 - [x] Dual-mode documentation (Automatic Code Review vs `@pr-reviewer` Chat)
 - [x] Prompt injection defense
-- [x] 2x independent architecture audits (6.5/10 → 8.5/10)
+- [x] Iterative architecture/security audits with external feedback
 - [x] Stack adaptation guide (xUnit, MSTest, SpecFlow, Dapper, Selenium, Minimal APIs)
 
 ### v1.0.1 (next patch)
@@ -212,22 +212,32 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 - [x] Fix `excludeAgent` to scalar string
 - [x] Add compatibility matrix to README
 - [x] Add CI validation script with PyYAML pinning and size checks
-- [ ] `api-design.instructions.md` (versioning, ProblemDetails, pagination, ETag)
-- [ ] Supply chain security rules (lockfile verification, typosquatting, signed packages)
-- [ ] Token budget refinement: byte-cap for PRs >100 changed files
+- [ ] Migrate custom agents from `gpt-5.2-codex` to omitted model
+- [ ] Remove stale references to old consolidated instruction files
+- [ ] Document smoke tests for `excludeAgent`, custom agents and path-specific review
+- [ ] Add semantic validation for stale file references and deprecated models
+- [ ] Add `api-design.instructions.md`
+- [ ] Add `github-actions.instructions.md` and `supply-chain.instructions.md`
+- [ ] Add review budget policy for large PRs and cost-aware review
 
 ### v1.1
-- [ ] GitHub Actions workflow for automated PR review on every PR (requires Copilot Code Review enabled externally)
-- [ ] Auto-labeling suggestions (`size/L`, `breaking-change`, `needs-migration`)
+- [ ] Document automatic Copilot Code Review setup via GitHub rulesets/settings
+- [ ] Optional workflow for PR labeling and instruction validation
 - [ ] xUnit and MSTest instruction files
-- [ ] `examples/` folder with bad-PR/good-PR for customization onboarding
+- [ ] Expand `examples/` into bad-PR/good-PR pairs by domain
+- [ ] Issue templates for false positives, missed findings and rule requests
 
-### v2.0
-- [ ] Integration with GitHub Checks API for inline annotations
-- [ ] Sub-agents for specialized reviews (security-only, perf-only)
-- [ ] Monorepo support (multi-language gating based on diff contents)
-- [ ] Feedback loop: issue template for reporting false positives
-- [ ] Integration with Azure DevOps work items
+### v2.0-template
+- [ ] Monorepo support
+- [ ] Sub-agent composition
+- [ ] Rule packs by stack
+- [ ] Feedback-loop documentation
+
+### v2.0-product
+- [ ] GitHub Checks API inline annotations
+- [ ] GitHub App or Action runtime
+- [ ] Azure DevOps integration
+- [ ] Metrics and reporting
 
 ---
 
@@ -251,4 +261,4 @@ MIT — use it, fork it, adapt it to your team. No attribution required (but app
 
 ---
 
-*Built with feedback from two independent architecture audits (v1: 6.5/10, v2: 8.5/10, v3: 9.0/10) and verified against official GitHub Copilot documentation. Model `gpt-5.2-codex` appears in official [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) table (May 2026, GA, Agent mode) and [OpenAI Codex agent docs](https://docs.github.com/en/copilot/concepts/agents/openai-codex) as selectable model. `excludeAgent` field documented in [changelog (Nov 12, 2025)](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/).*
+*Built with iterative feedback from multiple architecture/security audits and verified against official GitHub Copilot documentation. `excludeAgent` field documented in [changelog (Nov 12, 2025)](https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/).*
