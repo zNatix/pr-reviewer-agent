@@ -4,33 +4,26 @@
 > For domain-specific review rules, see `.github/instructions/`.
 
 ## Code Style
-- Follow Microsoft's C# Coding Conventions: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
-- PascalCase for classes, methods, properties, public members
-- camelCase for parameters and local variables
-- _camelCase for private instance fields (prefix with underscore)
-- I prefix for interfaces (IUserService, IRepository)
-- Async methods end with Async suffix (GetUserAsync)
-- Use file-scoped namespaces
-- Prefer expression-bodied members for single-line methods and properties
+- Follow Microsoft C# Coding Conventions
+- PascalCase classes/methods/properties; camelCase params/locals; _camelCase private fields
+- `I` prefix interfaces; `Async` suffix async methods
+- File-scoped namespaces; expression-bodied members for single-line code
 
 ## Architecture
-- All business logic in services, not controllers or step definitions
-- Step definitions delegate to helper classes — not raw implementation
-- DI with constructor injection always (no service locator anti-pattern)
-- Interfaces for all services used across layers
-- DTOs/ViewModels for crossing layer boundaries — never expose entities to API surface
-- Feature folders or clean architecture layers — not flat project structures
+- Business logic lives in services, not controllers or step definitions
+- Constructor injection only; interfaces for cross-layer services
+- DTOs/ViewModels at layer boundaries — never expose entities
+- Feature folders or clean architecture; no flat structures
 
 ## What Never Passes Review
-- Hardcoded secrets, keys, or connection strings
-- SQL string concatenation or dynamic SQL without parameterization
-- async void (except event handlers)
-- .Result, .Wait(), .GetAwaiter().GetResult() on async methods
-- new HttpClient() (use IHttpClientFactory)
-- Catching Exception without rethrow or logging
-- Missing Reqnroll step definitions for new Gherkin scenarios
-- Public methods without XML doc comments
-- Tests that assert nothing meaningful (assert true, assert not null only)
+- Hardcoded secrets, keys, connection strings
+- SQL concatenation without parameterization
+- `async void` (except event handlers); `.Result`/`.Wait()` on async
+- `new HttpClient()` — use `IHttpClientFactory`
+- Empty `catch (Exception)` without rethrow or logging
+- Missing Reqnroll step defs for new Gherkin scenarios
+- Public methods without XML docs
+- Tests asserting nothing meaningful (`Assert.True(true)`, `Is.NotNull` only)
 
 ## Instruction Files
 
@@ -48,6 +41,8 @@ Domain-specific rule files in `.github/instructions/` apply during code review. 
 | Gherkin | `.github/instructions/gherkin.instructions.md` |
 | Reqnroll | `.github/instructions/reqnroll.instructions.md` |
 | NUnit | `.github/instructions/nunit.instructions.md` |
+| xUnit | `.github/instructions/xunit.instructions.md` |
+| MSTest | `.github/instructions/mstest.instructions.md` |
 | Logging | `.github/instructions/logging.instructions.md` |
 | DI | `.github/instructions/di.instructions.md` |
 | EF Core | `.github/instructions/efcore.instructions.md` |
