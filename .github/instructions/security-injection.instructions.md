@@ -44,3 +44,10 @@ excludeAgent: "coding-agent"
 ### Mass Assignment
 - `[HttpPost] Action(EntityModel)` → require dedicated DTO, never bind directly to EF entities
 - Flag `[Bind]` attribute whitelisting properties on entity models (use DTOs instead)
+
+## Exceptions — Do Not Flag When
+
+- **CSP**: `script-src` uses `nonce-`, `hash-`, or `strict-dynamic` instead of `'self'` alone — this is stronger, not weaker.
+- **Authorization**: A global fallback policy (e.g., `options.FallbackPolicy = ...`) is registered in `Program.cs` and the endpoint does not explicitly opt out with `[AllowAnonymous]`.
+- **Rate limiting**: Middleware or attribute-based global rate limiting is configured; do not require per-endpoint duplication.
+- **Open redirect**: `Url.IsLocalUrl()` or equivalent validation is already present, or the URL is sourced from a trusted allowlist, not raw user input.

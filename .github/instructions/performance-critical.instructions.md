@@ -47,3 +47,10 @@ excludeAgent: "coding-agent"
 ## 🔵 Suggestion
 - `ConfigureAwait(false)` in library code (NuGet packages). Not needed in ASP.NET Core controllers or apps where `SynchronizationContext` is null (.NET Core+)
 - Use typed clients or named clients instead of string-based factory in hot paths
+
+## Exceptions — Do Not Flag When
+
+- **Intentional materialization**: `ToList()` is deliberately used to snapshot data before passing to an async method, or to force evaluation before a closure captures a lazy enumerable.
+- **Short-lived scripts/tests**: `new HttpClient()` in console apps, one-off scripts, or test setup where `IHttpClientFactory` is unavailable or overkill.
+- **Global middleware**: Rate limiting, caching, or auth middleware configured globally — do not flag the absence of per-endpoint duplication.
+- **Sync-over-async in non-ASP.NET contexts**: Desktop apps, Blazor Server event handlers, or legacy WinForms/WPF code may legitimately block on async I/O where `SynchronizationContext` behavior is understood and accepted.

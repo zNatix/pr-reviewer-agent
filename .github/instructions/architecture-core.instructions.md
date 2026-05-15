@@ -44,3 +44,10 @@ excludeAgent: "coding-agent"
 - Methods: >50 lines → check if single responsibility holds; exception for exhaustive switch expressions with simple arms
 - Nesting: >3 levels of `if`/`foreach`/`switch` nesting → suggest extraction or pattern (strategy, chain of responsibility)
 - Switch statements: >7 branches → consider polymorphism or dictionary dispatch
+
+## Exceptions — Do Not Flag When
+
+- **Composition root**: `Program.cs`, `Startup.cs`, and static factory methods in `IHostBuilder` extensions are exempt from class-size and DI-interface rules — wiring is expected to be verbose there.
+- **Generated/mapping classes**: AutoMapper profiles, DTO mapping classes, or generated proxy classes that exceed line counts due to boilerplate registration.
+- **Internal utilities**: Small helper classes (e.g., `StringExtensions`, `DateTimeExtensions`) used only within the same project do not require interfaces unless they cross a layer boundary.
+- **XML docs**: Internal-facing APIs or test projects — flagging missing XML docs is a 🔵 Suggestion at most, not a 🟡 Warning.
