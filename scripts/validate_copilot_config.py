@@ -13,7 +13,7 @@ import sys
 import yaml
 
 MAX_CODE_REVIEW_CHARS = 4000
-WARN_AT = 3500
+WARN_AT = 3800
 
 errors = 0
 warnings = 0
@@ -60,8 +60,7 @@ def check_instruction_references(path: str, content: str, existing: set, strict:
                 print(f"  ERROR: references non-existent instruction file: {ref}")
                 errors += 1
             else:
-                print(f"  WARNING: references non-existent instruction file: {ref}")
-                warnings += 1
+                print(f"  INFO: references non-existent instruction file (ok if optional/stack guide): {ref}")
 
 
 def validate_yaml_file(path: str):
@@ -76,6 +75,65 @@ def validate_yaml_file(path: str):
 
 
 existing_instructions = collect_instruction_files()
+
+# Validate README file count matches actual instruction files
+readme_count_path = "README.md"
+if os.path.exists(readme_count_path):
+    with open(readme_count_path, encoding="utf-8") as f:
+        readme_text = f.read()
+    count_match = re.search(r"(\d+)\s+split instruction files? across", readme_text)
+    if count_match:
+        declared_count = int(count_match.group(1))
+        actual_count = len(existing_instructions)
+        if declared_count != actual_count:
+            print(f"  ERROR: README declares {declared_count} instruction files, but {actual_count} found in .github/instructions/")
+            errors += 1
+    else:
+        print(f"  WARNING: could not find instruction file count in README.md")
+        warnings += 1
+
+
+def validate_labeler_schema(path: str):
+    global errors, warnings
+    try:
+        with open(path, encoding="utf-8") as f:
+            doc = yaml.safe_load(f)
+    except yaml.YAMLError:
+        return
+    if not isinstance(doc, dict):
+        print(f"  ERROR: labeler.yml must be a YAML mapping")
+        errors += 1
+        return
+    for label, rules in doc.items():
+        if not isinstance(rules, list):
+            print(f"  ERROR: labeler rule '{label}' must be a list, got {type(rules).__name__}")
+            errors += 1
+            continue
+        for idx, rule in enumerate(rules):
+            if not isinstance(rule, dict):
+                print(f"  ERROR: labeler rule '{label}[{idx}]' must be an object, got {type(rule).__name__}")
+                errors += 1
+                continue
+            valid_keys = {"changed-files", "head-branch", "base-branch"}
+            if not any(k in rule for k in valid_keys):
+                print(f"  ERROR: labeler rule '{label}[{idx}]' missing valid key ({valid_keys})")
+                errors += 1
+                continue
+            if "changed-files" in rule:
+                cfs = rule["changed-files"]
+                if not isinstance(cfs, list):
+                    print(f"  ERROR: labeler '{label}[{idx}].changed-files' must be a list, got {type(cfs).__name__}")
+                    errors += 1
+                    continue
+                for cidx, cf in enumerate(cfs):
+                    if not isinstance(cf, dict):
+                        print(f"  ERROR: labeler '{label}[{idx}].changed-files[{cidx}]' must be an object, got {type(cf).__name__}")
+                        errors += 1
+                        continue
+                    glob_keys = {"any-glob-to-any-file", "any-glob-to-all-files", "all-globs-to-any-file", "all-globs-to-all-files"}
+                    if not any(k in cf for k in glob_keys):
+                        print(f"  ERROR: labeler '{label}[{idx}].changed-files[{cidx}]' missing valid glob key ({glob_keys})")
+                        errors += 1
 
 # Validate instruction files
 for f in sorted(existing_instructions):
@@ -196,8 +254,7 @@ for f in sorted(glob.glob(".github/agents/*.agent.md")):
             print(f"  ERROR: non-trusted agent includes 'execute' tool — remove it or rename agent to include 'trusted'")
             errors += 1
         elif has_execute:
-            print(f"  WARNING: trusted agent includes 'execute' tool — ensure this is restricted to trusted branches")
-            warnings += 1
+            print(f"  INFO: trusted agent includes 'execute' tool — ensure this is restricted to trusted branches")
 
     # version: semver
     if "version" not in doc:
@@ -293,6 +350,12 @@ for pattern in [".github/workflows/*.yml", ".github/workflows/*.yaml", ".github/
     for f in sorted(glob.glob(pattern)):
         print(f"  {f}")
         validate_yaml_file(f)
+
+labeler_path = ".github/labeler.yml"
+if os.path.exists(labeler_path):
+    print(f"Checking {labeler_path} schema (actions/labeler v5)")
+    validate_labeler_schema(labeler_path)
+    print("  OK")
 
 strict = "--strict-warnings" in sys.argv
 

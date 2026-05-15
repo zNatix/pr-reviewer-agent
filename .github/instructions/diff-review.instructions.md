@@ -6,7 +6,7 @@ excludeAgent: "coding-agent"
 
 # Diff Review Contract
 
-> These rules define how the agent must read, map, and account for every changed hunk before producing findings. Inspired by structured diff coverage; adapted for GitHub Copilot agent review.
+> These rules define how the agent must read, map, and account for every changed hunk before producing findings. Adapted for GitHub Copilot agent review.
 
 ## Diff Map (mandatory first step)
 
@@ -39,8 +39,8 @@ The Diff Map must include:
 Group hunks into **Review Chapters** by causal relationship, not by file alone.
 
 - Changes that set up or enable later changes belong together.
-- Spanning multiple files is expected and correct (e.g., schema + API + UI for one feature = one chapter).
-- Moves and refactors are a single chapter: group deletion and addition hunks together as one "Move/Refactor" chapter.
+- Multi-file changes are fine (schema + API + UI = one chapter).
+- Moves/refactors: group deletions + additions as one chapter.
 - Split only when changes are truly independent: a reviewer could understand one without knowing the other.
 - Tests belong with their implementation chapter.
 - Config/dependency changes can be their own chapter if unrelated to a feature chapter.
