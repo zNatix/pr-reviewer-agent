@@ -1,0 +1,18 @@
+# CODEOWNERS — Require review for sensitive GitHub configuration
+
+# Agents and instructions: changes affect how Copilot reviews code
+.github/agents/           @zNatix
+.github/instructions/     @zNatix
+
+# Workflows: changes affect CI/CD security and automation
+.github/workflows/        @zNatix
+
+# Validation scripts: changes affect what gets checked in CI
+scripts/                  @zNatix
+
+# Security policy and governance
+SECURITY.md               @zNatix
+CODEOWNERS                @zNatix
+
+# Note: Replace @zNatix with your actual GitHub team or username.
+# If you are a single maintainer, use your own GitHub handle.
