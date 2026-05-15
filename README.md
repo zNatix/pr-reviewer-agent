@@ -19,7 +19,7 @@ The agent catches what humans miss — unhandled edge cases, security vulnerabil
 
 | Feature | Description |
 |---|---|
-| **24 split instruction files across 16 review domains** | Security, architecture, performance, logging, DI, NUnit, Gherkin, Reqnroll, Playwright, Appium, API design, GitHub Actions, supply chain, diff coverage |
+| **27 split instruction files across 18 review domains** | Security, architecture, performance, logging, DI, NUnit, xUnit, MSTest, Gherkin, Reqnroll, Playwright, Appium, API design, GitHub Actions, supply chain, diff coverage |
 | **Diff Coverage contract** | Structured Diff Map with causal Review Chapters and mandatory hunk coverage before findings |
 | **Token budget controls** | 25-file cap, skip auto-generated code, Dependabot fast-path, 30-finding max |
 | **Prompt injection defense** | Rejects malicious instructions embedded in code comments, READMEs, or PR descriptions |
@@ -122,6 +122,7 @@ The agent also reviews Playwright and Appium test code:
     ├── security-injection.instructions.md       # SQL injection, XSS, input validation, path traversal, ReDoS
     ├── security-auth.instructions.md            # Auth, secrets, deserialization, SSRF, open redirect
     ├── security-warnings.instructions.md        # Crypto, headers, cookies, dependencies
+    ├── secrets.instructions.md                  # Secret scanning, hardcoded credentials, connection strings
     ├── architecture-core.instructions.md        # SOLID, DRY, DI, project structure, code quality
     ├── architecture-patterns.instructions.md    # Nullable, records, IAsyncEnumerable
     ├── performance-critical.instructions.md     # EF Core, async, memory, HTTP
@@ -129,6 +130,8 @@ The agent also reviews Playwright and Appium test code:
     ├── gherkin.instructions.md                  # Feature file syntax, Given-When-Then, tags
     ├── reqnroll.instructions.md                 # Step definitions, hooks, Reqnroll-specific DI
     ├── nunit.instructions.md                    # Test naming, assertions, parallel execution, timeouts
+    ├── xunit.instructions.md                    # Traits, fixtures, TheoryData, member data
+    ├── mstest.instructions.md                   # TestMethod, DataRow, TestInitialize, DeploymentItem
     ├── logging.instructions.md                  # ILogger<T>, structured logging, no PII, source gen
     ├── di.instructions.md                       # Constructor injection, lifetimes, captive deps, keyed services
     ├── efcore.instructions.md                   # Querying, tracking, batching, migrations, compiled queries
@@ -208,7 +211,7 @@ Be honest about what this agent can and can't do. These are not bugs — they're
 ## Roadmap
 
 ### v1.0 ✅ (current)
-- [x] 15 review domains / 23 split instruction files implemented
+- [x] 18 review domains / 27 split instruction files implemented
 - [x] Token budget with scoping, Dependabot fast-path, skip patterns
 - [x] Dual-mode documentation (Automatic Code Review vs `@pr-reviewer` Chat)
 - [x] Prompt injection defense
