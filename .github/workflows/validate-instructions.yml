@@ -13,6 +13,7 @@ on:
       - 'README.md'
       - 'examples/**'
       - 'scripts/validate_copilot_config.py'
+      - 'scripts/validate_examples.py'
       - 'docs/**'
   push:
     paths:
@@ -26,6 +27,7 @@ on:
       - 'README.md'
       - 'examples/**'
       - 'scripts/validate_copilot_config.py'
+      - 'scripts/validate_examples.py'
       - 'docs/**'
 
 permissions:
@@ -46,3 +48,6 @@ jobs:
 
       - name: Validate frontmatter with YAML parser
         run: python scripts/validate_copilot_config.py --strict-warnings
+
+      - name: Validate examples regression harness
+        run: python scripts/validate_examples.py
